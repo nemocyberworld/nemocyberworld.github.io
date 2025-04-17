@@ -38,7 +38,10 @@
 
     <!-- Repo List -->
     <nav id="repo-list" class="space-y-2">
-      <!-- Repositories will be loaded here -->
+      <a href="#" class="block p-2 rounded hover:bg-gray-700">Mr Linux</a>
+      <a href="#" class="block p-2 rounded hover:bg-gray-700">Mr Windows</a>
+      <a href="#" class="block p-2 rounded hover:bg-gray-700">Mr C</a>
+      <a href="#" class="block p-2 rounded hover:bg-gray-700">Mr Java</a>
     </nav>
   </aside>
 
@@ -49,76 +52,18 @@
       <p class="text-gray-400 mb-4">
         This platform is your cybersecurity learning universe – browse through interactive tools, code repositories, and hands-on projects.
       </p>
+
+      <div class="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="bg-gray-800 p-4 rounded-lg shadow hover:shadow-lg transition">
+          <h3 class="text-xl font-semibold text-cyan-400">🔐 Mr Linux</h3>
+          <p class="text-gray-400">Learn Linux commands and scripting interactively.</p>
+        </div>
+        <!-- Add more cards here -->
+      </div>
     </section>
   </main>
 
-  <!-- Main Script -->
-  <script>
-    const username = "nemocyberworld";
-    const repoList = document.getElementById("repo-list");
-    const searchInput = document.getElementById("search");
-    const mainContent = document.getElementById("main-content");
-
-    let repos = [];
-
-    // Fetch and display repos
-    fetch(`https://api.github.com/users/${username}/repos`)
-      .then(res => res.json())
-      .then(data => {
-        repos = data;
-        renderRepos(data);
-      });
-
-    // Render repos
-    function renderRepos(data) {
-      repoList.innerHTML = "";
-      data.forEach(repo => {
-        const a = document.createElement("a");
-        a.href = "#";
-        a.className = "block p-2 rounded hover:bg-gray-700";
-        a.textContent = repo.name;
-        a.onclick = () => loadReadme(repo.name);
-        repoList.appendChild(a);
-      });
-    }
-
-    // Search filter
-    searchInput.addEventListener("input", e => {
-      const keyword = e.target.value.toLowerCase();
-      const filtered = repos.filter(r => r.name.toLowerCase().includes(keyword));
-      renderRepos(filtered);
-    });
-
-    // Load README from repo
-    function loadReadme(repoName) {
-      mainContent.innerHTML = `<h2 class="text-2xl font-bold mb-4">📘 ${repoName}</h2><p class="text-gray-400">Loading README...</p>`;
-
-      fetch(`https://raw.githubusercontent.com/${username}/${repoName}/main/README.md`)
-        .then(res => {
-          if (!res.ok) {
-            throw new Error("README not found");
-          }
-          return res.text();
-        })
-        .then(markdown => {
-          mainContent.innerHTML = `
-            <h2 class="text-2xl font-bold mb-4">📘 ${repoName}</h2>
-            <pre><code class="language-markdown">${markdown}</code></pre>
-          `;
-          hljs.highlightAll(); // re-run syntax highlighting
-        })
-        .catch(err => {
-          mainContent.innerHTML = `
-            <h2 class="text-2xl font-bold mb-4">📘 ${repoName}</h2>
-            <p class="text-red-400">README not found or cannot be loaded.</p>
-          `;
-        });
-    }
-
-    // Dark mode toggle
-    function toggleDarkMode() {
-      document.documentElement.classList.toggle('dark');
-    }
-  </script>
+  <!-- Your external script -->
+  <script src="script.js?v=1"></script>
 </body>
 </html>
