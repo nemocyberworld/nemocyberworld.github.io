@@ -1,60 +1,98 @@
 <!DOCTYPE html>
-<html lang="en" class="dark h-full">
+<html lang="en" class="dark">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NemoCyberWorld</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nemo Cyber World - Portfolio</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
     body { font-family: 'Fira Code', monospace; }
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 5px; }
+    a { color: #22d3ee; }
   </style>
 </head>
-<body class="h-full bg-gray-900 text-white flex overflow-hidden">
-
+<body class="bg-gray-900 text-white h-screen flex">
   <!-- Sidebar -->
-  <aside class="w-72 bg-gray-800 p-4 overflow-y-auto h-full border-r border-gray-700">
-    <h1 class="text-2xl font-bold text-cyan-400 mb-6">📚 NemoCyberWorld</h1>
+  <aside class="w-72 bg-gray-800 p-4 overflow-y-auto">
+    <h1 class="text-2xl font-bold text-cyan-400 mb-6">💻 Nemo Portfolio</h1>
 
-    <nav class="space-y-4 text-sm">
-      <details open class="group">
-        <summary class="cursor-pointer font-semibold text-white">Mr Linux</summary>
-        <ul class="ml-4 mt-2 space-y-1">
-          <li><a href="#" onclick="loadPage('mr-linux')" class="hover:underline">Intro to Bash</a></li>
-          <li><a href="#" onclick="loadPage('mr-linux-advanced')" class="hover:underline">Advanced Shell</a></li>
-        </ul>
-      </details>
-
-      <details class="group">
-        <summary class="cursor-pointer font-semibold text-white">Mr Windows</summary>
-        <ul class="ml-4 mt-2 space-y-1">
-          <li><a href="#" onclick="loadPage('mr-windows')" class="hover:underline">Windows Basics</a></li>
-        </ul>
-      </details>
+    <!-- Navigation -->
+    <nav class="space-y-4">
+      <button class="w-full text-left" onclick="loadSection('about')">👤 About Me</button>
+      <button class="w-full text-left" onclick="loadSection('articles')">📚 Articles & Lessons</button>
+      <button class="w-full text-left" onclick="loadSection('projects')">🛠 Projects</button>
+      <button class="w-full text-left" onclick="loadSection('contact')">📨 Contact</button>
     </nav>
   </aside>
 
-  <!-- Main Content Area -->
-  <main class="flex-1 overflow-y-auto p-6">
-    <div id="page-content" class="prose prose-invert max-w-none">
-      <h2 class="text-3xl text-cyan-400 font-bold">Welcome to NemoCyberWorld</h2>
-      <p class="text-gray-300 mt-2">Click a topic from the left to begin exploring your cyber journey.</p>
-    </div>
+  <!-- Main Content -->
+  <main class="flex-1 p-6 overflow-y-auto" id="main-content">
+    <h2 class="text-3xl font-bold text-cyan-300 mb-2">Welcome to My Cyber Portfolio</h2>
+    <p class="text-gray-400 mb-4">Explore my technical articles, hands-on projects, and cybersecurity lessons.</p>
   </main>
 
   <script>
-    function loadPage(id) {
-      fetch(`content/${id}.md`)
-        .then(res => res.ok ? res.text() : Promise.reject("Not found"))
-        .then(markdown => {
-          document.getElementById('page-content').innerHTML = marked.parse(markdown);
-          window.scrollTo(0, 0);
-        })
-        .catch(() => {
-          document.getElementById('page-content').innerHTML = '<p class="text-red-400">Error loading content.</p>';
-        });
+    async function loadSection(section) {
+      const main = document.getElementById('main-content');
+      if (section === 'about') {
+        main.innerHTML = `
+          <h2 class="text-3xl font-bold text-cyan-300 mb-2">👤 About Me</h2>
+          <p class="text-gray-400 mb-4">Hi! I'm Nemo — cybersecurity enthusiast, developer, and lifelong learner. This site is my digital playground where I publish what I build and learn.</p>
+          <p class="text-gray-400">Skills: Linux, Bash, Exploit Dev, Web Hacking, Automation</p>
+          <a href="#" class="underline mt-2 inline-block">Download My CV</a>
+        `;
+      } else if (section === 'articles') {
+        main.innerHTML = `
+          <h2 class="text-3xl font-bold text-cyan-300 mb-4">📚 Articles & Lessons</h2>
+          <ul class="space-y-2">
+            <li><a href="#" onclick="loadArticle('linux-intro')">🐧 Intro to Linux</a></li>
+            <li><a href="#" onclick="loadArticle('bash-basics')">🖥 Bash Basics</a></li>
+            <li><a href="#" onclick="loadArticle('windows-basics')">🪟 Windows Basics</a></li>
+          </ul>
+        `;
+      } else if (section === 'projects') {
+        main.innerHTML = `
+          <h2 class="text-3xl font-bold text-cyan-300 mb-4">🛠 My Projects</h2>
+          <div id="projects-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+        `;
+        fetchGitHubRepos();
+      } else if (section === 'contact') {
+        main.innerHTML = `
+          <h2 class="text-3xl font-bold text-cyan-300 mb-4">📨 Contact</h2>
+          <p>Email: <a href="mailto:your.email@example.com">your.email@example.com</a></p>
+          <p>GitHub: <a href="https://github.com/yourusername" target="_blank">github.com/yourusername</a></p>
+        `;
+      }
+    }
+
+    async function fetchGitHubRepos() {
+      const username = "nemocyberworld"; // replace with your actual GitHub username
+      const res = await fetch(`https://api.github.com/users/${username}/repos`);
+      const repos = await res.json();
+      const container = document.getElementById('projects-grid');
+      repos.forEach(repo => {
+        const card = document.createElement('div');
+        card.className = "bg-gray-800 p-4 rounded-lg shadow hover:shadow-lg";
+        card.innerHTML = `
+          <h3 class="text-xl font-semibold text-cyan-400">${repo.name}</h3>
+          <p class="text-gray-400 text-sm mb-2">${repo.description || 'No description provided.'}</p>
+          <a href="${repo.html_url}" target="_blank" class="underline">View on GitHub</a>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    async function loadArticle(id) {
+      try {
+        const response = await fetch(`articles/${id}.md`);
+        if (!response.ok) throw new Error('Article not found');
+        const md = await response.text();
+        document.getElementById('main-content').innerHTML = marked.parse(md);
+      } catch (error) {
+        document.getElementById('main-content').innerHTML = '<p class="text-red-400">Failed to load article.</p>';
+      }
     }
   </script>
 </body>
