@@ -3,110 +3,57 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NemoCyberWorld Dashboard</title>
-
-  <!-- Tailwind CSS -->
+  <title>NemoCyberWorld</title>
   <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- Markdown Parser -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
-
   <style>
+    body { font-family: 'Fira Code', monospace; }
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 5px; }
-    body { font-family: 'Fira Code', monospace; }
   </style>
 </head>
+<body class="h-full bg-gray-900 text-white flex overflow-hidden">
 
-<body class="h-full bg-gray-900 text-white overflow-hidden">
-  <div class="flex h-screen overflow-hidden">
+  <!-- Sidebar -->
+  <aside class="w-72 bg-gray-800 p-4 overflow-y-auto h-full border-r border-gray-700">
+    <h1 class="text-2xl font-bold text-cyan-400 mb-6">📚 NemoCyberWorld</h1>
 
-    <!-- Sidebar -->
-    <aside class="w-72 bg-gray-800 p-4 overflow-y-auto">
-      <h1 class="text-2xl font-bold text-cyan-400 mb-6">📁 Repositories</h1>
+    <nav class="space-y-4 text-sm">
+      <details open class="group">
+        <summary class="cursor-pointer font-semibold text-white">Mr Linux</summary>
+        <ul class="ml-4 mt-2 space-y-1">
+          <li><a href="#" onclick="loadPage('mr-linux')" class="hover:underline">Intro to Bash</a></li>
+          <li><a href="#" onclick="loadPage('mr-linux-advanced')" class="hover:underline">Advanced Shell</a></li>
+        </ul>
+      </details>
 
-      <div class="space-y-2">
-        <details open class="bg-gray-700 rounded p-2">
-          <summary class="cursor-pointer font-semibold">Mr Linux</summary>
-          <ul class="ml-4 mt-2 space-y-1">
-            <li><button onclick="loadRepo('mr-linux')" class="hover:underline">Intro to Bash</button></li>
-            <li><button onclick="loadRepo('mr-linux-advanced')" class="hover:underline">Advanced Shell</button></li>
-          </ul>
-        </details>
+      <details class="group">
+        <summary class="cursor-pointer font-semibold text-white">Mr Windows</summary>
+        <ul class="ml-4 mt-2 space-y-1">
+          <li><a href="#" onclick="loadPage('mr-windows')" class="hover:underline">Windows Basics</a></li>
+        </ul>
+      </details>
+    </nav>
+  </aside>
 
-        <details class="bg-gray-700 rounded p-2">
-          <summary class="cursor-pointer font-semibold">Mr Windows</summary>
-          <ul class="ml-4 mt-2 space-y-1">
-            <li><button onclick="loadRepo('mr-windows')" class="hover:underline">Windows Basics</button></li>
-          </ul>
-        </details>
-      </div>
-    </aside>
-
-    <!-- Main Content -->
-    <main class="flex-1 overflow-y-auto p-6 space-y-6">
-      <section id="card-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <!-- Cards dynamically generated -->
-      </section>
-
-      <section id="readme-viewer" class="bg-gray-800 p-6 rounded-lg shadow hidden">
-        <h2 class="text-xl font-semibold text-cyan-400 mb-4">📘 README</h2>
-        <div id="readme-content" class="prose prose-invert max-w-none overflow-auto"></div>
-      </section>
-    </main>
-
-  </div>
+  <!-- Main Content Area -->
+  <main class="flex-1 overflow-y-auto p-6">
+    <div id="page-content" class="prose prose-invert max-w-none">
+      <h2 class="text-3xl text-cyan-400 font-bold">Welcome to NemoCyberWorld</h2>
+      <p class="text-gray-300 mt-2">Click a topic from the left to begin exploring your cyber journey.</p>
+    </div>
+  </main>
 
   <script>
-    const repositories = [
-      {
-        id: 'mr-linux',
-        name: 'Mr Linux',
-        description: 'Learn Linux commands and scripting from scratch.',
-        readme: 'repos/mr-linux/README.md'
-      },
-      {
-        id: 'mr-linux-advanced',
-        name: 'Mr Linux Advanced',
-        description: 'Dive deep into advanced Linux operations and scripting.',
-        readme: 'repos/mr-linux-advanced/README.md'
-      },
-      {
-        id: 'mr-windows',
-        name: 'Mr Windows',
-        description: 'Explore Windows internals and PowerShell scripting.',
-        readme: 'repos/mr-windows/README.md'
-      }
-    ];
-
-    window.onload = () => {
-      const container = document.getElementById('card-container');
-      repositories.forEach(repo => {
-        const card = document.createElement('div');
-        card.className = "bg-gray-800 p-4 rounded-lg shadow hover:shadow-lg transition cursor-pointer";
-        card.innerHTML = `
-          <h3 class="text-xl font-semibold text-cyan-400">${repo.name}</h3>
-          <p class="text-gray-400 mt-1">${repo.description}</p>
-        `;
-        card.onclick = () => loadRepo(repo.id);
-        container.appendChild(card);
-      });
-    };
-
-    function loadRepo(repoId) {
-      const repo = repositories.find(r => r.id === repoId);
-      if (!repo) return alert('Repo not found.');
-
-      fetch(repo.readme)
-        .then(res => res.text())
-        .then(md => {
-          document.getElementById('readme-viewer').classList.remove('hidden');
-          document.getElementById('readme-content').innerHTML = marked.parse(md);
-          window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    function loadPage(id) {
+      fetch(`content/${id}.md`)
+        .then(res => res.ok ? res.text() : Promise.reject("Not found"))
+        .then(markdown => {
+          document.getElementById('page-content').innerHTML = marked.parse(markdown);
+          window.scrollTo(0, 0);
         })
         .catch(() => {
-          document.getElementById('readme-viewer').classList.remove('hidden');
-          document.getElementById('readme-content').innerHTML = '<p class="text-red-400">README not found.</p>';
+          document.getElementById('page-content').innerHTML = '<p class="text-red-400">Error loading content.</p>';
         });
     }
   </script>
