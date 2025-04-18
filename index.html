@@ -17,8 +17,6 @@
   <!-- Sidebar -->
   <aside class="w-72 bg-gray-800 p-4 overflow-y-auto">
     <h1 class="text-2xl font-bold text-cyan-400 mb-6">💻 Nemo Portfolio</h1>
-
-    <!-- Navigation -->
     <nav class="space-y-4">
       <button class="w-full text-left" onclick="loadSection('about')">👤 About Me</button>
       <button class="w-full text-left" onclick="loadSection('articles')">📚 Articles & Lessons</button>
@@ -34,40 +32,44 @@
   </main>
 
   <script>
-//
-
     function renderCategory(name, lessons) {
-  const id = name.toLowerCase().replace(/\\s+/g, '-');
-  return `
-    <div>
-      <button onclick="toggleCategory('${id}')" class="font-semibold text-lg text-cyan-400">${name}</button>
-      <ul id="${id}-list" class="ml-4 mt-2 space-y-1 hidden">
-        ${lessons.map(lesson => `
-          <li>
-            <a href="#" onclick="loadArticle('${lesson.path}')" class="hover:underline text-gray-300">
-              ${lesson.title}
-            </a>
-          </li>
-        `).join('')}
-      </ul>
-    </div>
-  `;
-}
-//
+      const id = name.toLowerCase().replace(/\s+/g, '-');
+      return `
+        <div>
+          <button onclick="toggleCategory('${id}')" class="font-semibold text-lg text-cyan-400">${name}</button>
+          <ul id="${id}-list" class="ml-4 mt-2 space-y-1 hidden">
+            ${lessons.map(lesson => `
+              <li>
+                <a href="#" onclick="loadArticle('${lesson.path}')" class="hover:underline text-gray-300">
+                  ${lesson.title}
+                </a>
+              </li>
+            `).join('')}
+          </ul>
+        </div>
+      `;
+    }
+
     function toggleCategory(id) {
-  const el = document.getElementById(`${id}-list`);
-  el.classList.toggle('hidden');
-}
+      const el = document.getElementById(`${id}-list`);
+      el.classList.toggle('hidden');
+    }
 
-async function loadArticle(path) {
-  const response = await fetch(`articles/${path}`);
-  const md = await response.text();
-  document.getElementById('lesson-content').innerHTML = marked.parse(md);
-}
+    async function loadArticle(path) {
+      try {
+        const response = await fetch(`articles/${path}`);
+        if (!response.ok) throw new Error('Article not found');
+        const md = await response.text();
+        const main = document.getElementById('main-content');
+        main.innerHTML = `<div class="prose prose-invert max-w-none">${marked.parse(md)}</div>`;
+      } catch (error) {
+        document.getElementById('main-content').innerHTML = '<p class="text-red-400">Failed to load article.</p>';
+      }
+    }
 
-    
     async function loadSection(section) {
       const main = document.getElementById('main-content');
+
       if (section === 'about') {
         main.innerHTML = `
           <h2 class="text-3xl font-bold text-cyan-300 mb-2">👤 About Me</h2>
@@ -75,31 +77,21 @@ async function loadArticle(path) {
           <p class="text-gray-400">Skills: Linux, Bash, Exploit Dev, Web Hacking, Automation</p>
           <a href="#" class="underline mt-2 inline-block">Download My CV</a>
         `;
-      // } else if (section === 'articles') {
-      //   main.innerHTML = `
-      //     <h2 class="text-3xl font-bold text-cyan-300 mb-4">📚 Articles & Lessons</h2>
-      //     <ul class="space-y-2">
-      //       <li><a href="#" onclick="loadArticle('linux-intro')">🐧 Intro to Linux</a></li>
-      //       <li><a href="#" onclick="loadArticle('bash-basics')">🖥 Bash Basics</a></li>
-      //       <li><a href="#" onclick="loadArticle('windows-basics')">🪟 Windows Basics</a></li>
-      //     </ul>
-      //   `;
-      // } 
-      else if (section === 'articles') {
-  main.innerHTML = `
-    <h2 class="text-3xl font-bold text-cyan-300 mb-4">📚 Articles & Lessons</h2>
-    <div id="lesson-sidebar" class="space-y-4">
-      ${renderCategory('Linux', [
-        { title: 'Intro to Linux', path: 'linux/intro.md' },
-        { title: 'Permissions', path: 'linux/permissions.md' }
-      ])}
-      ${renderCategory('Windows', [
-        { title: 'Windows Basics', path: 'windows/basics.md' }
-      ])}
-    </div>
-    <div id="lesson-content" class="mt-6 prose prose-invert max-w-none"></div>
-  `;
-} else if (section === 'projects') {
+      } else if (section === 'articles') {
+        main.innerHTML = `
+          <h2 class="text-3xl font-bold text-cyan-300 mb-4">📚 Articles & Lessons</h2>
+          <div id="lesson-sidebar" class="space-y-4">
+            ${renderCategory('Linux', [
+              { title: 'Intro to Linux', path: 'linux/intro.md' },
+              { title: 'Permissions', path: 'linux/permissions.md' }
+            ])}
+            ${renderCategory('Windows', [
+              { title: 'Windows Basics', path: 'windows/basics.md' }
+            ])}
+          </div>
+          <div id="lesson-content" class="mt-6 prose prose-invert max-w-none"></div>
+        `;
+      } else if (section === 'projects') {
         main.innerHTML = `
           <h2 class="text-3xl font-bold text-cyan-300 mb-4">🛠 My Projects</h2>
           <div id="projects-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
@@ -115,10 +107,11 @@ async function loadArticle(path) {
     }
 
     async function fetchGitHubRepos() {
-      const username = "nemocyberworld"; // replace with your actual GitHub username
+      const username = "nemocyberworld"; // Replace with your GitHub username
       const res = await fetch(`https://api.github.com/users/${username}/repos`);
       const repos = await res.json();
       const container = document.getElementById('projects-grid');
+
       repos.forEach(repo => {
         const card = document.createElement('div');
         card.className = "bg-gray-800 p-4 rounded-lg shadow hover:shadow-lg";
@@ -129,17 +122,6 @@ async function loadArticle(path) {
         `;
         container.appendChild(card);
       });
-    }
-
-    async function loadArticle(id) {
-      try {
-        const response = await fetch(`articles/${id}.md`);
-        if (!response.ok) throw new Error('Article not found');
-        const md = await response.text();
-        document.getElementById('main-content').innerHTML = marked.parse(md);
-      } catch (error) {
-        document.getElementById('main-content').innerHTML = '<p class="text-red-400">Failed to load article.</p>';
-      }
     }
   </script>
 </body>
