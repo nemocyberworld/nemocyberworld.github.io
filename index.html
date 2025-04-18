@@ -32,18 +32,9 @@
   </main>
 
   <script>
-    const username = "nemocyberworld"; // 🔁 CHANGE THIS TO YOUR GITHUB USERNAME
-
+    const username = "nemocyberworld"; // Change this to your GitHub username
     const repoList = document.getElementById('repo-list');
     const contentArea = document.getElementById('repo-content');
-
-    function base64ToUtf8(base64) {
-      try {
-        return decodeURIComponent(escape(atob(base64)));
-      } catch {
-        return atob(base64);
-      }
-    }
 
     async function fetchRepos() {
       const res = await fetch(`https://api.github.com/users/${username}/repos`);
@@ -66,53 +57,42 @@
     async function loadRepo(repo) {
       contentArea.innerHTML = `<h2 class="text-xl text-cyan-400 mb-4">${repo}</h2><p class="text-gray-400">Loading...</p>`;
 
-      try {
-        const readmeRes = await fetch(`https://api.github.com/repos/${username}/${repo}/readme`);
-        const readmeJson = await readmeRes.json();
-        const markdown = base64ToUtf8(readmeJson.content);
+      const readmeRes = await fetch(`https://api.github.com/repos/${username}/${repo}/readme`);
+      const readmeJson = await readmeRes.json();
+      const markdown = atob(readmeJson.content);
 
-        const filesRes = await fetch(`https://api.github.com/repos/${username}/${repo}/contents`);
-        const files = await filesRes.json();
+      const filesRes = await fetch(`https://api.github.com/repos/${username}/${repo}/contents`);
+      const files = await filesRes.json();
 
-        const fileList = files.map(f => {
-          if (f.type === "file") {
-            return `<li><a href="#" onclick="loadFile('${repo}', '${f.path}')" class="text-cyan-300 hover:underline">${f.name}</a></li>`;
-          } else {
-            return `<li><span class="text-yellow-400">📁 ${f.name}</span></li>`;
-          }
-        }).join("");
+      const fileList = files.map(f => {
+        if (f.type === "file") {
+          return `<li><a href="#" onclick="loadFile('${repo}', '${f.path}')" class="text-cyan-300 hover:underline">${f.name}</a></li>`;
+        } else {
+          return `<li><span class="text-yellow-400">📁 ${f.name}</span></li>`;
+        }
+      }).join("");
 
-        contentArea.innerHTML = `
-          <h2 class="text-2xl font-bold text-cyan-400">${repo}</h2>
-          <div class="mt-4">${marked.parse(markdown)}</div>
-          <h3 class="text-xl mt-6 text-gray-300">📁 Files</h3>
-          <ul class="list-disc list-inside space-y-1 text-sm mt-2">${fileList}</ul>
-        `;
-        hljs.highlightAll();
-      } catch (e) {
-        contentArea.innerHTML = `<p class="text-red-400">❌ Failed to load repository contents.</p>`;
-        console.error(e);
-      }
+      contentArea.innerHTML = `
+        <h2 class="text-2xl font-bold text-cyan-400">${repo}</h2>
+        <div class="mt-4">${marked.parse(markdown)}</div>
+        <h3 class="text-xl mt-6 text-gray-300">📁 Files</h3>
+        <ul class="list-disc list-inside space-y-1 text-sm mt-2">${fileList}</ul>
+      `;
+      hljs.highlightAll();
     }
 
     async function loadFile(repo, path) {
-      contentArea.innerHTML = `<p class="text-gray-400">Loading file: <strong>${path}</strong>...</p>`;
-      try {
-        const fileRes = await fetch(`https://raw.githubusercontent.com/${username}/${repo}/main/${path}`);
-        const content = await fileRes.text();
+      const fileRes = await fetch(`https://raw.githubusercontent.com/${username}/${repo}/main/${path}`);
+      const content = await fileRes.text();
 
-        const extension = path.split('.').pop();
-        const lang = hljs.getLanguage(extension) ? extension : '';
+      const extension = path.split('.').pop();
+      const lang = hljs.getLanguage(extension) ? extension : '';
 
-        contentArea.innerHTML = `
-          <h2 class="text-xl text-cyan-400 mb-2">${path}</h2>
-          <pre><code class="language-${lang}">${content.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</code></pre>
-        `;
-        hljs.highlightAll();
-      } catch (err) {
-        contentArea.innerHTML = `<p class="text-red-400">⚠️ Unable to load this file.</p>`;
-        console.error(err);
-      }
+      contentArea.innerHTML = `
+        <h2 class="text-xl text-cyan-400 mb-2">${path}</h2>
+        <pre><code class="language-${lang}">${content.replace(/</g, "&lt;")}</code></pre>
+      `;
+      hljs.highlightAll();
     }
 
     fetchRepos();
