@@ -26,7 +26,7 @@ Everything is written in Markdown and rendered cleanly in a custom site layout p
 ## 🌐 Live Site
 
 **Browse the site here:**  
-🔗 [https://nemocyberworld.github.io/nemocyberworld](https://nemocyberworld.github.io/nemocyberworld)
+🔗 [https://nemocyberworld.github.io/](https://nemocyberworld.github.io/)
 
 ---
 
