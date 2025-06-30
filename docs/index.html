@@ -81,6 +81,11 @@
         main.innerHTML = `
           <h2 class="text-3xl font-bold text-cyan-300 mb-4">📚 Articles & Lessons</h2>
           <div id="lesson-sidebar" class="space-y-4">
+            ${renderCategory('Bug Bounty', [
+              { title: 'Browser Extensions', path: 'Bug-Bounty/index.html' },
+              { title: 'Permissions', path: 'linux/permissions.md' },
+              { title: 'Privilege Escalation', path: 'linux/priv.md' },
+            ])}
             ${renderCategory('Linux', [
               { title: 'Intro to Linux', path: 'linux/intro.md' },
               { title: 'Permissions', path: 'linux/permissions.md' },
