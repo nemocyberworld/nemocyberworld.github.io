@@ -11,122 +11,697 @@
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 5px; }
     a { color: #22d3ee; }
+
+    /* Mobile friendly layout */
+    .layout-container { display: flex; height: 100vh; }
+    @media (max-width: 768px) {
+      .layout-container { flex-direction: column !important; }
+      aside { width: 100% !important; border-right: none !important; border-bottom: 1px solid #374151 !important; }
+    }
   </style>
 </head>
-<body class="bg-gray-900 text-white h-screen flex">
-  <!-- Sidebar -->
-  <aside class="w-72 bg-gray-800 p-4 overflow-y-auto">
-    <h1 class="text-2xl font-bold text-cyan-400 mb-6">💻 Nemo Portfolio</h1>
-    <nav class="space-y-4">
-      <button class="w-full text-left" onclick="loadSection('about')">👤 About Me</button>
-      <!--<button class="w-full text-left" onclick="loadSection('articles')">📚 Articles & Lessons</button>-->
-      <button class="w-full text-left" onclick="loadSection('projects')">🛠 Projects</button>
-      <button class="w-full text-left" onclick="loadSection('contact')">📨 Contact</button>
-    </nav>
-  </aside>
+<body class="bg-gray-900 text-white">
+  <!-- Layout Wrapper -->
+  <div class="layout-container">
+    <!-- Sidebar -->
+    <aside class="w-72 bg-gray-800 p-4 overflow-y-auto">
+      <h1 class="text-2xl font-bold text-cyan-400 mb-6">💻 Nemo Portfolio</h1>
+      <nav class="space-y-4">
+        <button class="w-full text-left hover:underline" onclick="loadSection('about')">👤 About Me</button>
+        <!--<button class="w-full text-left" onclick="loadSection('articles')">📚 Articles & Lessons</button>-->
+        <button class="w-full text-left hover:underline" onclick="loadSection('projects')">🛠 Projects</button>
+        <button class="w-full text-left hover:underline" onclick="loadSection('content')">🗂 Content</button>
+        <button class="w-full text-left hover:underline" onclick="loadSection('contact')">📨 Contact</button>
+      </nav>
+    </aside>
 
-  <!-- Main Content -->
-  <main class="flex-1 p-6 overflow-y-auto" id="main-content">
-    <h2 class="text-3xl font-bold text-cyan-300 mb-2">Welcome to My Cyber Portfolio</h2>
-    <p class="text-gray-400 mb-4">Explore my technical articles, hands-on projects, and cybersecurity lessons.</p>
-  </main>
+    <!-- Main Content -->
+<main class="flex-1 p-6 overflow-y-auto" id="main-content">
+  <h2 class="text-3xl font-bold text-cyan-300 mb-3">🌐 Welcome to Nemo Cyber World</h2>
+  <p class="text-gray-400 mb-4">
+    I’m <span class="text-cyan-400 font-semibold">Saide Hossain (Captain Nemo)</span> — 
+    an <strong>Offensive Security Specialist</strong> and <strong>Exploit Developer</strong> from Bangladesh.
+  </p>
+  <p class="text-gray-400 mb-4">
+    This portfolio is a hub for my <span class="text-cyan-400">Open-Source Security Projects</span>, 
+    <span class="text-cyan-400">Offensive Security Research</span>, and 
+    <span class="text-cyan-400">CTF Challenges</span>.  
+    You’ll find tools, write-ups, and resources that reflect my journey in 
+    <strong>Penetration Testing</strong>, <strong>Bug Bounty Hunting</strong>, and 
+    <strong>Red Teaming</strong>.
+  </p>
+  <p class="text-gray-400 mb-4">
+    🚀 Explore my <em>Main Projects</em> & <em>Mini Projects</em>, 
+    discover learning resources, and connect with me for collaborations.
+  </p>
+  <a href="https://github.com/nemocyberworld" target="_blank" 
+     class="inline-block mt-3 px-4 py-2 bg-cyan-500 hover:bg-cyan-600 rounded-lg text-white font-medium transition">
+    🔗 Visit My GitHub
+  </a>
+</main>
+</div>
+
 
   <script>
-    function renderCategory(name, lessons) {
-      const id = name.toLowerCase().replace(/\s+/g, '-');
-      return `
-        <div>
-          <button onclick="toggleCategory('${id}')" class="font-semibold text-lg text-cyan-400">${name}</button>
-          <ul id="${id}-list" class="ml-4 mt-2 space-y-1 hidden">
-            ${lessons.map(lesson => `
-              <li>
-                <a href="#" onclick="loadArticle('${lesson.path}')" class="hover:underline text-gray-300">
-                  ${lesson.title}
-                </a>
-              </li>
-            `).join('')}
-          </ul>
-        </div>
-      `;
-    }
+    // ====== STATIC PROJECT DATA (Edit freely) ======
+    const PROJECTS = [
+    {
+    name: "OSINT-Tracker",
+    desc: "Track your OSINT operations.",
+    url: "https://github.com/nemocyberworld/OSINT-Tracker",
+    tags: ["osint","tracker"],
+    category: "mini"
+  },
+  {
+    name: "Reverse-Tracker",
+    desc: "Track your software reverse engineering.",
+    url: "https://github.com/nemocyberworld/Reverse-Tracker",
+    tags: ["reverse-engineering","tracker"],
+    category: "mini"
+  },
+  {
+    name: "Stegano-Tracker",
+    desc: "Track your stegano progress.",
+    url: "https://github.com/nemocyberworld/Stegano-Tracker",
+    tags: ["steganography","tracker"],
+    category: "mini"
+  },
+  {
+    name: "System-Pentesting-Tracker",
+    desc: "Track your system pentesting progress.",
+    url: "https://github.com/nemocyberworld/System-Pentesting-Tracker",
+    tags: ["system-pentesting","tracker"],
+    category: "mini"
+  },
+  {
+    name: "Wireless-Pentesting-Tracker",
+    desc: "Track your wireless penetration testing.",
+    url: "https://github.com/nemocyberworld/Wireless-Pentesting-Tracker",
+    tags: ["wireless-pentesting","tracker"],
+    category: "mini"
+  },
+  {
+    name: "Network-Pentesting-Tracker",
+    desc: "Track your network penetration testing.",
+    url: "https://github.com/nemocyberworld/Network-Pentesting-Tracker",
+    tags: ["network-pentesting","tracker"],
+    category: "mini"
+  },
+  {
+    name: "Forensics-Tracker",
+    desc: "Track your forensics operations.",
+    url: "https://github.com/nemocyberworld/Forensics-Tracker",
+    tags: ["forensics","tracker"],
+    category: "mini"
+  },
+  {
+    name: "Crypto-Cracking-Tracker",
+    desc: "Track your crypto cracking tasks.",
+    url: "https://github.com/nemocyberworld/Crypto-Cracking-Tracker",
+    tags: ["crypto","cracking","tracker"],
+    category: "mini"
+  },
+  {
+    name: "Active-Directory-Pentesting",
+    desc: "Track your active directory penetration testing.",
+    url: "https://github.com/nemocyberworld/Active-Directory-Pentesting",
+    tags: ["active-directory","pentesting","tracker"],
+    category: "mini"
+  },
+  {
+    name: "Cloud-Pentesting-Tracker",
+    desc: "Track your cloud pentesting.",
+    url: "https://github.com/nemocyberworld/Cloud-Pentesting-Tracker",
+    tags: ["cloud","pentesting","tracker"],
+    category: "mini"
+  },
+  {
+    name: "Bug-Bounty-Tracker",
+    desc: "Track bug bounty testing progress and ensure no category is missed.",
+    url: "https://github.com/nemocyberworld/Bug-Bounty-Tracker",
+    tags: ["bugbounty","tracker"],
+    category: "mini"
+  },
+  {
+    name: "Feroxbuster-Extractor",
+    desc: "Parse and extract detailed Feroxbuster scan results with export options.",
+    url: "https://github.com/nemocyberworld/Feroxbuster-Extractor",
+    tags: ["feroxbuster","extractor","bugbounty"],
+    category: "mini"
+  },
+  {
+    name: "Content-Analyzer",
+    desc: "Universal content analyzer for exposed secrets in code and text files.",
+    url: "https://github.com/nemocyberworld/Content-Analyzer",
+    tags: ["content","secrets","regex"],
+    category: "mini"
+  },
+  {
+    name: "URL-Extractor",
+    desc: "Extract unique URLs from text with table view, CSV import/export.",
+    url: "https://github.com/nemocyberworld/URL-Extractor",
+    tags: ["url","extractor","parser"],
+    category: "mini"
+  },
+  {
+    name: "BugHunterNotepad",
+    desc: "Dark-themed web app for organizing bug bounty notes by categories.",
+    url: "https://github.com/nemocyberworld/BugHunterNotepad",
+    tags: ["bugbounty","notes","webapp"],
+    category: "mini"
+  },
+  {
+    name: "Sub-IP-Extractor",
+    desc: "Extract subdomains & IPs from text with filtering options.",
+    url: "https://github.com/nemocyberworld/Sub-IP-Extractor",
+    tags: ["subdomain","ip","extractor"],
+    category: "mini"
+  },
+  {
+    name: "Censys-Extractor",
+    desc: "Extract IPs, domains, and subdomains from raw Censys URLs.",
+    url: "https://github.com/nemocyberworld/Censys-Extractor",
+    tags: ["censys","extractor","osint"],
+    category: "mini"
+  },
+  {
+    name: "Shodan-Extractor",
+    desc: "Parse Shodan dumps to extract juicy details like IPs, hostnames, and cert info.",
+    url: "https://github.com/nemocyberworld/Shodan-Extractor",
+    tags: ["shodan","extractor","bugbounty"],
+    category: "mini"
+  },
+  {
+    name: "X.com-Dorker",
+    desc: "Generate and save advanced X.com (Twitter) search queries with dorks.",
+    url: "https://github.com/nemocyberworld/X.com-Dorker",
+    tags: ["twitter","x","dorking"],
+    category: "mini"
+  },
+  {
+    name: "LinkedIn-Dorker",
+    desc: "Generate targeted LinkedIn search queries for recon and job hunting.",
+    url: "https://github.com/nemocyberworld/LinkedIn-Dorker",
+    tags: ["linkedin","dorking","recon"],
+    category: "mini"
+  },
+  {
+    name: "Censys-Dorker",
+    desc: "Craft powerful Censys search queries with 100+ prebuilts.",
+    url: "https://github.com/nemocyberworld/Censys-Dorker",
+    tags: ["censys","dorking","recon"],
+    category: "mini"
+  },
+  {
+    name: "Github-Dorker",
+    desc: "Generate GitHub dorks targeting domains with local save & reset.",
+    url: "https://github.com/nemocyberworld/Github-Dorker",
+    tags: ["github","dorking","recon"],
+    category: "mini"
+  },
+  {
+    name: "Shodan-Dorker",
+    desc: "Generate Shodan search queries with sleek Tailwind CSS UI.",
+    url: "https://github.com/nemocyberworld/Shodan-Dorker",
+    tags: ["shodan","dorking","recon"],
+    category: "mini"
+  },
+  {
+    name: "Physics",
+    desc: "BS and MSc subjects coverage and research papers.",
+    url: "https://github.com/nemocyberworld/physics",
+    tags: ["physics","mathematics","research"],
+    category: "main"
+  },
+  {
+    name: "Assembly Tutor",
+    desc: "Interactive x86-64 assembly learning with number systems.",
+    url: "https://github.com/nemocyberworld/assembly-tutor",
+    tags: ["assembly","x86","learning"],
+    category: "main"
+  },
+  {
+    name: "learn-rsa-interactively",
+    desc: "Interactive learning of RSA encryption and decryption with examples.",
+    url: "https://github.com/nemocyberworld/learn-rsa-interactively",
+    tags: ["rsa","cryptography","learning"],
+    category: "mini"
+  },
+  {
+  name: "CV Builder",
+  desc: "CV building HTML template.",
+  url: "https://github.com/nemocyberworld/cv-builder",
+  tags: ["cv","template","resume"],
+  category: "mini"
+  },
+  {
+    name: "Nemo The Investigator",
+    desc: "OSINT tools box for investigations.",
+    url: "https://github.com/nemocyberworld/Nemo-The-Investigator",
+    tags: ["osint","tools","investigation"],
+    category: "main"
+  },
+  {
+    name: "CTF Challanges Research Hub",
+    desc: "Learn about CTF challenges, tools, and techniques.",
+    url: "https://github.com/nemocyberworld/CTF-Education",
+    tags: ["ctf","education","training"],
+    category: "main"
+  },
+  {
+    name: "Ethical Hacker Portfolio Themes",
+    desc: "Collection of ethical hacker portfolio themes.",
+    url: "https://github.com/nemocyberworld/Ethical-Hacker-Portfolio-Themes",
+    tags: ["portfolio","themes","hacking"],
+    category: "main"
+  },
+  {
+    name: "Bug Bounty",
+    desc: "Bug Bounty research hub with tools, techniques, and materials.",
+    url: "https://github.com/nemocyberworld/Bug-Bounty",
+    tags: ["bugbounty","research","tools"],
+    category: "main"
+  },
+  {
+    name: "Bug Bounty CheckList",
+    desc: "Interactive checklist for web application penetration testing and bug bounty hunting.",
+    url: "https://github.com/nemocyberworld/BugBountyCheckList",
+    tags: ["bugbounty","checklist","pentest"],
+    category: "mini"
+  },
+  {
+    name: "CMP Dorker",
+    desc: "Multi-platform dorking tool to find vulnerabilities and exposed data.",
+    url: "https://github.com/nemocyberworld/CMP-Dorker",
+    tags: ["dorking","search","bugbounty"],
+    category: "mini"
+  },
+  {
+    name: "Google Dorker",
+    desc: "Generate 200+ advanced Google dorks for reconnaissance.",
+    url: "https://github.com/nemocyberworld/Google-Dorker",
+    tags: ["google","dorker","recon"],
+    category: "mini"
+  },
+  {
+    name: "Username Checker",
+    desc: "Check target's username availability across different platforms.",
+    url: "https://github.com/nemocyberworld/Username-Checker",
+    tags: ["osint","username","checker"],
+    category: "mini"
+  },
+  {
+    name: "Mr Linux",
+    desc: "Interactive Linux learning project with commands, tests, and games.",
+    url: "https://github.com/nemocyberworld/mr-linux",
+    tags: ["linux","learning","shell"],
+    category: "main"
+  },
+  {
+    name: "Offsec Tools",
+    desc: "Well-documented collection of offensive security tools.",
+    url: "https://github.com/nemocyberworld/Offsec-Tools",
+    tags: ["offsec","tools","security"],
+    category: "main"
+  },
+  {
+    name: "Github Repo Downloader",
+    desc: "Download all repositories of any GitHub user by submitting username.",
+    url: "https://github.com/nemocyberworld/Github-Repo-Downloader",
+    tags: ["github","automation","downloader"],
+    category: "mini"
+  },
+  {
+    name: "Hacker Roadmap",
+    desc: "Complete ethical hacker roadmap.",
+    url: "https://github.com/nemocyberworld/Hacker-Roadmap",
+    tags: ["hacking","roadmap","learning"],
+    category: "main"
+  },
+  {
+    name: "Pentest Suite",
+    desc: "Suite of penetration testing resources and scripts.",
+    url: "https://github.com/nemocyberworld/Pentest-Suite",
+    tags: ["pentest","suite","security"],
+    category: "main"
+  },
+  {
+    name: "Cert Gen",
+    desc: "Certificate generator project.",
+    url: "https://github.com/nemocyberworld/Cert-Gen",
+    tags: ["certificate","generator","automation"],
+    category: "mini"
+  },
+  {
+    name: "OffSec Search Engines",
+    desc: "Directory of OSINT and cybersecurity search engines.",
+    url: "https://github.com/nemocyberworld/OffSecSearchEngines",
+    tags: ["offsec","osint","search"],
+    category: "mini"
+  },
+  {
+    name: "Captain Nemo  Ethical Hacking Roadmap",
+    desc: "Personal pathway and record-keeping project.",
+    url: "https://github.com/nemocyberworld/Captain-Nemo",
+    tags: ["personal","notes","pathway"],
+    category: "mini"
+  },
+  {
+    name: "Offensive Security Research Hub",
+    desc: "Deep offensive security lab covering CVEs, exploits, AD, fuzzing, and red teaming.",
+    url: "https://github.com/nemocyberworld/Offensive-Security-Research-Hub",
+    tags: ["offsec","research","redteam"],
+    category: "main"
+  },
+  {
+    name: "PenTest Walkthrough",
+    desc: "Curated walkthroughs from labs like TryHackMe, PicoCTF, and more.",
+    url: "https://github.com/nemocyberworld/PenTest-Walkthrough",
+    tags: ["pentest","walkthrough","ctf"],
+    category: "main"
+  },
+  {
+    name: "Cybersecurity Job Search Portal",
+    desc: "Portal for top cybersecurity job platforms worldwide.",
+    url: "https://github.com/nemocyberworld/Cybersecurity-Job-Search-Portal",
+    tags: ["jobs","cybersecurity","career"],
+    category: "mini"
+  },
+  {
+    name: "Captain Nemo's Portfolio",
+    desc: "Personal GitHub Pages portfolio website.",
+    url: "https://github.com/nemocyberworld/nemocyberworld.github.io",
+    tags: ["portfolio","website","html"],
+    category: "mini"
+  },
+  {
+    name: "Pentesting Tracker Hub",
+    desc: "Tracker hub featuring tools for AD, Cloud, OSINT, Crypto, Reverse, and more.",
+    url: "https://github.com/nemocyberworld/Pentesting-Tracker-Hub",
+    tags: ["pentest","tracker","hub"],
+    category: "mini"
+  },
+  {
+    name: "Red Teaming Tracker",
+    desc: "Track your red team operations.",
+    url: "https://github.com/nemocyberworld/Red-Teaming-Tracker",
+    tags: ["redteam","tracker","pentest"],
+    category: "mini"
+  },
+  {
+    name: "PWN Tracker",
+    desc: "Track your pwn operations and exploits.",
+    url: "https://github.com/nemocyberworld/PWN-Tracker",
+    tags: ["pwn","tracker","exploits"],
+    category: "mini"
+  }
+    ];
 
-    function toggleCategory(id) {
-      const el = document.getElementById(`${id}-list`);
-      if (el) el.classList.toggle('hidden');
-    }
+    // ====== STATIC CONTENT DATA (Edit freely) ======
+const CONTENT_ITEMS = [
+  { 
+    title: "Linux Privilege Escalation Notes", 
+    type: "notes", 
+    tags: ["linux","privesc","rt"], 
+    url: "http://127.0.0.1:3000/nemocyberworld.github.io/docs/posts/linux-privesc.html", 
+    desc: "Checklists, SUID, capabilities, kernel, creds." 
+  },
+  { 
+    title: "AD Attack Path – Beginner to Practical", 
+    type: "tutorial", 
+    tags: ["ad","rt","lateral"], 
+    url: "https://nemocyberworld.github.io/posts/ad-attack-path.html", 
+    desc: "From enumeration to DA with common misconfigs." 
+  },
+  { 
+    title: "Web Exploitation Cheatsheet", 
+    type: "notes", 
+    tags: ["web","owasp","burp"], 
+    url: "https://nemocyberworld.github.io/posts/web-cheatsheet.html", 
+    desc: "Auth, IDOR, SSRF, deserialization quick hits." 
+  },
+  { 
+    title: "Writeup: PicoCTF Pwn Trio", 
+    type: "writeup", 
+    tags: ["pwn","ctf","rop"], 
+    url: "https://nemocyberworld.github.io/posts/pico-pwn.html", 
+    desc: "Ret2libc, ROP chain, NX bypass walkthroughs." 
+  },
+  { 
+    title: "Beginner’s Guide to OSINT", 
+    type: "tutorial", 
+    tags: ["osint","recon"], 
+    url: "https://nemocyberworld.github.io/posts/osint-guide.html", 
+    desc: "Practical OSINT workflow with free tools." 
+  },
+  { 
+    title: "CTF Notes: Web Challenges", 
+    type: "notes", 
+    tags: ["ctf","web"], 
+    url: "https://nemocyberworld.github.io/posts/ctf-web-notes.html", 
+    desc: "Common web exploits explained with CTF examples." 
+  },
+  { 
+    title: "Writeup: HackTheBox Machine – Legacy", 
+    type: "writeup", 
+    tags: ["htb","smb","exploits"], 
+    url: "https://nemocyberworld.github.io/posts/htb-legacy.html", 
+    desc: "SMB exploit walkthrough for the Legacy machine." 
+  },
+  { 
+    title: "Pentest Methodology Checklist", 
+    type: "notes", 
+    tags: ["pentest","methodology","checklist"], 
+    url: "https://nemocyberworld.github.io/posts/pentest-checklist.html", 
+    desc: "Step-by-step notes for real-world penetration tests." 
+  }
+];
 
-    async function loadArticle(path) {
-      try {
-        const response = await fetch(`articles/${path}`);
-        if (!response.ok) throw new Error('Article not found');
-        const md = await response.text();
-        const main = document.getElementById('main-content');
-        main.innerHTML = `<div class="prose prose-invert max-w-none">${marked.parse(md)}</div>`;
-      } catch (error) {
-        document.getElementById('main-content').innerHTML = '<p class="text-red-400">Failed to load article.</p>';
-      }
-    }
 
+    // ====== SECTION RENDERERS ======
     async function loadSection(section) {
       const main = document.getElementById('main-content');
 
       if (section === 'about') {
         main.innerHTML = `
           <h2 class="text-3xl font-bold text-cyan-300 mb-2">👤 About Me</h2>
-          <p class="text-gray-400 mb-4">Hi! I'm Nemo — cybersecurity enthusiast, developer, and lifelong learner. This site is my digital playground where I publish what I build and learn.</p>
-          <p class="text-gray-400">Skills: Linux, Bash, C/C++, Python, Exploit Dev, Web Hacking, Automation</p>
-          <a href="https://nemocyberworld.github.io/cv-builder/" class="underline mt-2 inline-block">Download My CV</a>
-        `;
-      } else if (section === 'articles') {
-        main.innerHTML = `
-          <h2 class="text-3xl font-bold text-cyan-300 mb-4">📚 Articles & Lessons</h2>
-          <div id="lesson-sidebar" class="space-y-4">
-            ${renderCategory('Bug Bounty', [
-              { title: 'Browser Extensions', path: 'bugbounty/browser-ext.md' }
-            ])}
-            ${renderCategory('Linux', [
-              { title: 'Intro to Linux', path: 'linux/intro.md' },
-              { title: 'Permissions', path: 'linux/permissions.md' },
-              { title: 'Privilege Escalation', path: 'linux/priv.md' },
-            ])}
-            ${renderCategory('Windows', [
-              { title: 'Windows Basics', path: 'windows/basics.md' }
-            ])}
-          </div>
-          <div id="lesson-content" class="mt-6 prose prose-invert max-w-none"></div>
+          <p class="text-gray-400 mb-4">
+            Hi! I'm <span class="text-cyan-400">Saide Hossain (Captain Nemo)</span> — an Offensive Security Specialist and
+            Red Teaming Enthusiast from Bangladesh. I focus on <strong>penetration testing, exploit development,
+            OSINT automation, and adversary simulations</strong>.
+          </p>
+          <p class="text-gray-400 mb-4">
+            Currently, I mentor students at <span class="text-cyan-400">H4K2LIV3 Academy</span>, where I design CTF
+            challenges and workshops on Linux privilege escalation, web app exploitation, and red team tactics.
+            I also contribute actively to the open-source community with projects on GitHub, including
+            <em>Offensive Security Research Hub</em>, <em>CMP Dorker</em>, and <em>Bug Bounty Checklist</em>.
+          </p>
+          <p class="text-gray-400 mb-4">
+            Outside of security, I pursue academic research in <strong>Theoretical Physics</strong> and build
+            interactive learning tools that combine science, coding, and cybersecurity.
+          </p>
+          <p class="text-gray-400">Core Skills: Linux • Bash • Python • Exploit Dev • Web Hacking • Red Team Ops • OSINT</p>
+          <a href="https://nemocyberworld.github.io/cv-builder/" class="underline mt-2 inline-block">📄 Download My CV</a>
         `;
       } else if (section === 'projects') {
-        main.innerHTML = `
-          <h2 class="text-3xl font-bold text-cyan-300 mb-4">🛠 My Projects</h2>
-          <div id="projects-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-        `;
-        fetchGitHubRepos();
+        renderProjectsSection();
+      } else if (section === 'content') {
+        renderContentSection();
       } else if (section === 'contact') {
-        main.innerHTML = `
-          <h2 class="text-3xl font-bold text-cyan-300 mb-4">📨 Contact</h2>
-          <p>Email: <a href="mailto:nemo14398@gmail.com">nemo14398@gmail.com</a></p>
-          <p>GitHub: <a href="https://github.com/nemocyberworld" target="_blank">github.com/nemocyberworld</a></p>
-        `;
-      }
+  main.innerHTML = `
+    <h2 class="text-3xl font-bold text-cyan-300 mb-4">📨 Contact</h2>
+    <p><span class="font-semibold">Name:</span> Saide Hossain (Captain Nemo)</p>
+    <p><span class="font-semibold">Location:</span> Bangladesh</p>
+    <p><span class="font-semibold">Email:</span> 
+      <a href="mailto:nemo14398@gmail.com" 
+         class="text-cyan-400 hover:text-cyan-300 visited:text-purple-400 active:text-cyan-200 transition">nemo14398@gmail.com</a>
+    </p>
+    <p><span class="font-semibold">WhatsApp:</span> 
+      <a href="https://wa.me/8801343136429" target="_blank" 
+         class="text-cyan-400 hover:text-cyan-300 visited:text-purple-400 active:text-cyan-200 transition">+8801343136429</a>
+    </p>
+    <p><span class="font-semibold">Website:</span> 
+      <a href="https://nemocyberworld.github.io" target="_blank" 
+         class="text-cyan-400 hover:text-cyan-300 visited:text-purple-400 active:text-cyan-200 transition">nemocyberworld.github.io</a>
+    </p>
+    <p><span class="font-semibold">Blog:</span> 
+      <a href="https://nemocyberworld.blogspot.com" target="_blank" 
+         class="text-cyan-400 hover:text-cyan-300 visited:text-purple-400 active:text-cyan-200 transition">nemocyberworld.blogspot.com</a>
+    </p>
+    <p><span class="font-semibold">GitHub:</span> 
+      <a href="https://github.com/nemocyberworld" target="_blank" 
+         class="text-cyan-400 hover:text-cyan-300 visited:text-purple-400 active:text-cyan-200 transition">github.com/nemocyberworld</a>
+    </p>
+    <p><span class="font-semibold">X (Twitter):</span> 
+      <a href="https://x.com/nemocyberworld" target="_blank" 
+         class="text-cyan-400 hover:text-cyan-300 visited:text-purple-400 active:text-cyan-200 transition">@nemocyberworld</a>
+    </p>
+    <p><span class="font-semibold">LinkedIn:</span> 
+      <a href="https://www.linkedin.com/in/saide-hossain-856b20363" target="_blank" 
+         class="text-cyan-400 hover:text-cyan-300 visited:text-purple-400 active:text-cyan-200 transition">in/saide-hossain-856b20363</a>
+    </p>
+    <p><span class="font-semibold">Facebook:</span> 
+      <a href="https://www.facebook.com/profile.php?id=61577115671398" target="_blank" 
+         class="text-cyan-400 hover:text-cyan-300 visited:text-purple-400 active:text-cyan-200 transition">profile.php?id=61577115671398</a>
+    </p>
+  `;
+}
+
+
     }
 
-    async function fetchGitHubRepos() {
-      const username = "nemocyberworld";
-      const res = await fetch(`https://api.github.com/users/${username}/repos`);
-      const repos = await res.json();
-      const container = document.getElementById('projects-grid');
+    function renderProjectsSection() {
+      const main = document.getElementById('main-content');
+      main.innerHTML = `
+        <div class="flex items-center justify-between gap-3 flex-wrap mb-4">
+          <h2 class="text-3xl font-bold text-cyan-300">🛠 Projects</h2>
+          <div class="flex items-center gap-2">
+            <button id="btn-main" class="px-3 py-1.5 rounded bg-cyan-600 hover:bg-cyan-500">Main Projects</button>
+            <button id="btn-mini" class="px-3 py-1.5 rounded bg-gray-700 hover:bg-gray-600">Mini Projects</button>
+          </div>
+        </div>
 
-      repos.forEach(repo => {
-        const card = document.createElement('div');
-        card.className = "bg-gray-800 p-4 rounded-lg shadow hover:shadow-lg";
-        card.innerHTML = `
-          <h3 class="text-xl font-semibold text-cyan-400">${repo.name}</h3>
-          <p class="text-gray-400 text-sm mb-2">${repo.description || 'No description provided.'}</p>
-          <a href="${repo.html_url}" target="_blank" class="underline">View on GitHub</a>
-        `;
-        container.appendChild(card);
-      });
+        <div class="mb-4">
+          <input id="project-search" type="text" placeholder="Search projects by name, description, or tag…"
+            class="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 outline-none focus:ring-2 focus:ring-cyan-500 placeholder-gray-400" />
+        </div>
+
+        <p id="active-label" class="text-sm text-gray-400 mb-2">Showing: <span class="text-cyan-400 font-semibold">Main Projects</span></p>
+        <div id="projects-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+      `;
+
+      const btnMain = document.getElementById('btn-main');
+      const btnMini = document.getElementById('btn-mini');
+      const searchInput = document.getElementById('project-search');
+      const label = document.getElementById('active-label');
+
+      let activeCategory = 'main';
+      let query = '';
+
+      const setActiveButton = () => {
+        if (activeCategory === 'main') {
+          btnMain.className = "px-3 py-1.5 rounded bg-cyan-600 hover:bg-cyan-500";
+          btnMini.className = "px-3 py-1.5 rounded bg-gray-700 hover:bg-gray-600";
+          label.innerHTML = 'Showing: <span class="text-cyan-400 font-semibold">Main Projects</span>';
+        } else {
+          btnMini.className = "px-3 py-1.5 rounded bg-cyan-600 hover:bg-cyan-500";
+          btnMain.className = "px-3 py-1.5 rounded bg-gray-700 hover:bg-gray-600";
+          label.innerHTML = 'Showing: <span class="text-cyan-400 font-semibold">Mini Projects</span>';
+        }
+      };
+
+      const render = () => {
+        const grid = document.getElementById('projects-grid');
+        grid.innerHTML = '';
+        const filtered = PROJECTS.filter(p =>
+          p.category === activeCategory &&
+          (p.name.toLowerCase().includes(query) ||
+           p.desc.toLowerCase().includes(query) ||
+           p.tags.some(t => t.toLowerCase().includes(query)))
+        );
+        if (filtered.length === 0) {
+          grid.innerHTML = `<div class="col-span-full text-gray-400">No projects found.</div>`;
+          return;
+        }
+        filtered.forEach(repo => {
+          const card = document.createElement('div');
+          card.className = "bg-gray-800 p-4 rounded-lg shadow hover:shadow-lg border border-gray-700";
+          card.innerHTML = `
+            <h3 class="text-lg font-semibold text-cyan-400">${repo.name}</h3>
+            <p class="text-gray-400 text-sm mt-1 mb-3">${repo.desc}</p>
+            <div class="flex flex-wrap gap-2 mb-3">
+              ${repo.tags.map(t => `<span class="text-xs px-2 py-0.5 rounded bg-gray-700 text-gray-300">${t}</span>`).join('')}
+            </div>
+            <a href="${repo.url}" target="_blank" class="underline">View on GitHub</a>
+          `;
+          grid.appendChild(card);
+        });
+      };
+
+      // Listeners
+      btnMain.addEventListener('click', () => { activeCategory = 'main'; setActiveButton(); render(); });
+      btnMini.addEventListener('click', () => { activeCategory = 'mini'; setActiveButton(); render(); });
+      searchInput.addEventListener('input', (e) => { query = e.target.value.trim().toLowerCase(); render(); });
+      searchInput.addEventListener('keydown', (e) => { if (e.key === 'Escape') { searchInput.value=''; query=''; render(); } });
+
+      // Initial paint
+      setActiveButton();
+      render();
     }
+
+    function renderContentSection() {
+      const main = document.getElementById('main-content');
+      main.innerHTML = `
+        <div class="flex items-center justify-between gap-3 flex-wrap mb-4">
+          <h2 class="text-3xl font-bold text-cyan-300">🗂 Content</h2>
+          <div class="flex items-center gap-2">
+            <select id="content-type" class="bg-gray-800 border border-gray-700 rounded px-3 py-2">
+              <option value="all">All Types</option>
+              <option value="notes">Notes</option>
+              <option value="tutorial">Tutorials</option>
+              <option value="writeup">Writeups</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <input id="content-search" type="text" placeholder="Search content by title, tag, or description…"
+            class="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 outline-none focus:ring-2 focus:ring-cyan-500 placeholder-gray-400" />
+        </div>
+
+        <div id="content-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+      `;
+
+      const typeSelect = document.getElementById('content-type');
+      const searchInput = document.getElementById('content-search');
+
+      let activeType = 'all';
+      let query = '';
+
+      const render = () => {
+        const grid = document.getElementById('content-grid');
+        grid.innerHTML = '';
+        const filtered = CONTENT_ITEMS.filter(item => {
+          const typeMatch = activeType === 'all' ? true : item.type === activeType;
+          const q = query.toLowerCase();
+          const qMatch = item.title.toLowerCase().includes(q) ||
+                         item.desc.toLowerCase().includes(q) ||
+                         item.tags.some(t => t.toLowerCase().includes(q));
+          return typeMatch && qMatch;
+        });
+
+        if (filtered.length === 0) {
+          grid.innerHTML = `<div class="col-span-full text-gray-400">No content found.</div>`;
+          return;
+        }
+
+        filtered.forEach(item => {
+          const card = document.createElement('div');
+          card.className = "bg-gray-800 p-4 rounded-lg shadow hover:shadow-lg border border-gray-700";
+          card.innerHTML = `
+            <div class="flex items-center justify-between">
+              <h3 class="text-lg font-semibold text-cyan-400">${item.title}</h3>
+              <span class="text-xs px-2 py-0.5 rounded bg-gray-700 text-gray-300">${item.type}</span>
+            </div>
+            <p class="text-gray-400 text-sm mt-2 mb-3">${item.desc}</p>
+            <div class="flex flex-wrap gap-2 mb-3">
+              ${item.tags.map(t => `<span class="text-xs px-2 py-0.5 rounded bg-gray-700 text-gray-300">${t}</span>`).join('')}
+            </div>
+            <a href="${item.url}" target="_blank" class="underline">Open</a>
+          `;
+          grid.appendChild(card);
+        });
+      };
+
+      typeSelect.addEventListener('change', (e) => { activeType = e.target.value; render(); });
+      searchInput.addEventListener('input', (e) => { query = e.target.value.trim(); render(); });
+      searchInput.addEventListener('keydown', (e) => { if (e.key === 'Escape') { searchInput.value=''; query=''; render(); } });
+
+      render();
+    }
+
+    // ====== INITIAL LANDING ======
+    // loadSection('projects'); // optional auto-load
   </script>
 </body>
 </html>
