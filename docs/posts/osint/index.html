@@ -1,0 +1,481 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>OSINT Investigation Playbook — Sequenced</title>
+<style>
+  :root{
+    --bg: #f7f8fb;
+    --card: #ffffff;
+    --muted: #6b7280;
+    --accent: #2563eb;
+    --nav-bg: #111827;
+    --nav-width: 260px;
+    --gap: 16px;
+    --radius: 10px;
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  }
+  body{margin:0;background:var(--bg);color:#0f172a;}
+  .app{display:flex;min-height:100vh;}
+  nav.sidebar{
+    width:var(--nav-width);
+    background:var(--nav-bg);
+    color:#fff;
+    padding:20px 16px;
+    box-sizing:border-box;
+    position:sticky;top:0;height:100vh;overflow:auto;
+  }
+  .brand{font-weight:700;font-size:18px;margin-bottom:12px;}
+  .toc{list-style:none;padding:0;margin:0;}
+  .toc a{display:block;padding:8px 10px;border-radius:8px;color:#fff;text-decoration:none;margin-bottom:6px;}
+  .toc a:hover, .toc a:focus{background:#1f2937;color:#fff;outline:none;}
+  .main{flex:1;padding:24px;box-sizing:border-box;}
+  .controls{display:flex;gap:12px;align-items:center;margin-bottom:18px;flex-wrap:wrap;}
+  .search{flex:1;min-width:220px;}
+  input[type="search"]{
+    width:100%;padding:10px 12px;border-radius:8px;border:1px solid #e6e9ef;background:#fff;
+    box-sizing:border-box;font-size:14px;
+  }
+  .btn{background:var(--accent);color:#fff;padding:9px 12px;border-radius:8px;border:0;cursor:pointer;}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:var(--gap);align-items:start;}
+  .card{background:var(--card);border-radius:var(--radius);padding:14px;box-shadow:0 1px 2px rgba(12,14,20,0.04);border:1px solid rgba(15,23,42,0.04);}
+  .step-num{display:inline-block;background:#eef2ff;color:#1e3a8a;padding:6px 10px;border-radius:8px;font-weight:700;margin-bottom:8px;}
+  .card-title{font-weight:700;margin:8px 0 6px 0;font-size:18px;}
+  .card-meta{color:var(--muted);font-size:13px;margin-bottom:10px;}
+  .card-body{font-size:14px;color:#0f172a;line-height:1.45;}
+  .chip{display:inline-block;background:#f0fdf4;color:#065f46;padding:4px 8px;border-radius:999px;font-size:12px;margin-right:6px;}
+  .muted{color:var(--muted);font-size:13px;}
+  footer{margin-top:20px;color:var(--muted);font-size:13px;}
+  @media (max-width:900px){
+    nav.sidebar{position:static;width:100%;height:auto;padding:12px;display:flex;overflow:auto;}
+    .app{flex-direction:column;}
+    .main{padding:16px;}
+  }
+</style>
+</head>
+<body>
+<div class="app" role="application">
+  <nav class="sidebar" aria-label="Main navigation">
+    <div class="brand">OSINT Playbook — Step Sequence</div>
+    <p class="muted" style="margin:0 0 12px 0;">Follow the numbered steps in order for a thorough investigation.</p>
+    <ul class="toc" id="toc">
+      <!-- auto-generated TOC entries correspond to step IDs -->
+    </ul>
+    <hr style="border:none;border-top:1px solid rgba(255,255,255,0.06);margin:12px 0;">
+    <div class="muted">Source: OSINT guideline PDF (extracted & organized). :contentReference[oaicite:1]{index=1}</div>
+    <div style="margin-top:10px;font-size:13px;color:#e2e8f0;">
+      Notes: This template is sanitized — no personal leaked credentials are included.
+    </div>
+  </nav>
+
+  <main class="main" id="main" tabindex="-1">
+    <header style="margin-bottom:12px;">
+      <h1 style="margin:0 0 6px 0;font-size:22px;">OSINT Investigation — Step-by-step</h1>
+      <p class="muted" style="margin:0 0 8px 0;">A sequenced checklist of tools & techniques to run investigations responsibly and with OPSEC.</p>
+      <div class="controls" role="region" aria-label="Controls">
+        <div class="search" style="flex:1;">
+          <label for="q" class="sr-only">Search items</label>
+          <input id="q" type="search" placeholder="Search steps, tool names or keywords..." aria-label="Search items" />
+        </div>
+        <button class="btn" id="clearBtn">Clear</button>
+        <div style="margin-left:auto;" class="muted">Showing <span id="count">—</span> items</div>
+      </div>
+    </header>
+
+    <section class="grid" id="grid" aria-live="polite">
+      <!-- Step 01 -->
+      <article id="step-01" class="card" data-title="01: Google Smartly (Dorking)" data-tags="google,dorking,search">
+        <div class="step-num">01</div>
+        <h2 class="card-title">Google Smartly — Advanced Search (Dorking)</h2>
+        <div class="card-meta"><span class="chip">Discovery</span> <span class="muted">Core: site:, filetype:, intitle:</span></div>
+        <div class="card-body">
+          <p>Use advanced Google operators to uncover exposed files, directories, or scoped results.</p>
+          <ul>
+            <li><strong>Examples:</strong> <code>site:facebook.com "Full Name"</code>, <code>filetype:pdf site:gov.bd "budget"</code>, <code>intitle:index.of</code></li>
+            <li><strong>Goal:</strong> find public documents, open directories, or scoped content related to target.</li>
+          </ul>
+        </div>
+      </article>
+
+      <!-- Step 02 -->
+      <article id="step-02" class="card" data-title="02: Search by Email/Username/Name" data-tags="email,username,breach">
+        <div class="step-num">02</div>
+        <h2 class="card-title">Search by Email, Username, or Name</h2>
+        <div class="card-meta"><span class="chip">Identity</span> <span class="muted">Tools: WhatsMyName, HaveIBeenPwned, Hunter</span></div>
+        <div class="card-body">
+          <p>Start with the identity pivot: email ↔ username ↔ name. Use these to expand to social profiles and breaches.</p>
+          <ul>
+            <li>WhatsMyName / Maigret / Sherlock — scan username across platforms.</li>
+            <li>HaveIBeenPwned, Dehashed, Scylla — check breach exposure.</li>
+            <li>Hunter.io — find email patterns for a domain.</li>
+          </ul>
+        </div>
+      </article>
+
+      <!-- Step 03 -->
+      <article id="step-03" class="card" data-title="03: Image & Geo OSINT" data-tags="images,geolocation,exif">
+        <div class="step-num">03</div>
+        <h2 class="card-title">Analyze Images & Location (Image / Geo OSINT)</h2>
+        <div class="card-meta"><span class="chip">Media</span> <span class="muted">Tools: Google / Yandex / Exif.tools</span></div>
+        <div class="card-body">
+          <p>Extract EXIF/metadata, reverse-image, and geolocate visual clues.</p>
+          <ul>
+            <li>Google Reverse Image, Yandex Image Search for visual matches.</li>
+            <li>Exif.tools / ExifTool to extract GPS, timestamp, device info.</li>
+            <li>Use GeoSpy / SunCalc / Mapillary / Yandex Street View to verify and triangulate locations.</li>
+          </ul>
+        </div>
+      </article>
+
+      <!-- Step 04 -->
+      <article id="step-04" class="card" data-title="04: Social Media OSINT" data-tags="social,facebook,instagram,twitter">
+        <div class="step-num">04</div>
+        <h2 class="card-title">Social Media OSINT</h2>
+        <div class="card-meta"><span class="chip">Profiles</span> <span class="muted">Tools: Twint, Picuki, InstaLooker</span></div>
+        <div class="card-body">
+          <p>Collect public social media traces, posts, friends, and metadata.</p>
+          <ul>
+            <li>Use platform-specific tooling or scrapers (Twint for Twitter, Graph APIs where permitted).</li>
+            <li>Picuki / InstaLooker for anonymous Instagram viewing.</li>
+            <li>Map a target's network and note access patterns/timezones.</li>
+          </ul>
+        </div>
+      </article>
+
+      <!-- Step 05 -->
+      <article id="step-05" class="card" data-title="05: Learn OSINT Resources" data-tags="learning,resources">
+        <div class="step-num">05</div>
+        <h2 class="card-title">Core OSINT Resources & Learning</h2>
+        <div class="card-meta"><span class="chip">Learning</span> <span class="muted">OSINT Framework, Bellingcat, YouTube</span></div>
+        <div class="card-body">
+          <p>Keep a shortlist of canonical resources and practice challenges.</p>
+          <ul>
+            <li>OSINT Framework, Bellingcat OSINT Guide, SANS OSINT materials.</li>
+            <li>YouTube channels: I-Intelligence, Hacksploit Bangla (for Bengali content).</li>
+            <li>Practice: Trace Labs CTFs, Hacktoria, OSINT Dojo.</li>
+          </ul>
+        </div>
+      </article>
+
+      <!-- Step 06 -->
+      <article id="step-06" class="card" data-title="06: Metadata Extraction & Manipulation" data-tags="metadata,exiftool">
+        <div class="step-num">06</div>
+        <h2 class="card-title">Metadata Extraction & Manipulation</h2>
+        <div class="card-meta"><span class="chip">Forensics</span> <span class="muted">Tools: ExifTool, strings, binwalk, FOCA</span></div>
+        <div class="card-body">
+          <p>Extract timestamps, GPS, software markers, and hidden strings from files.</p>
+          <ul>
+            <li>ExifTool for images & docs. Example: <code>exiftool image.jpg</code></li>
+            <li>strings / binwalk for binaries and firmware.</li>
+            <li>FOCA for document metadata collected via Google Dorks.</li>
+          </ul>
+        </div>
+      </article>
+
+      <!-- Step 07 -->
+      <article id="step-07" class="card" data-title="07: Passive Infrastructure Recon" data-tags="infrastructure,shodan,dns">
+        <div class="step-num">07</div>
+        <h2 class="card-title">Passive Infrastructure Recon</h2>
+        <div class="card-meta"><span class="chip">Infra</span> <span class="muted">Shodan, Censys, DNS mapping</span></div>
+        <div class="card-body">
+          <p>Map domains, IPs, tech stacks and exposed devices without active probing.</p>
+          <ul>
+            <li>Shodan / Censys for exposed devices and banners.</li>
+            <li>DNSDumpster, SecurityTrails, ViewDNS for passive DNS and history.</li>
+            <li>BuiltWith / Wappalyzer for tech stack fingerprinting; ASN lookups for related hosting ranges.</li>
+          </ul>
+        </div>
+      </article>
+
+      <!-- Step 08 -->
+      <article id="step-08" class="card" data-title="08: OPSEC & Sock Puppets" data-tags="opsec,sockpuppet,vpn">
+        <div class="step-num">08</div>
+        <h2 class="card-title">Sock Puppets & Operational Security (OPSEC)</h2>
+        <div class="card-meta"><span class="chip">OPSEC</span> <span class="muted">VMs, Tor, VPN, compartmentalization</span></div>
+        <div class="card-body">
+          <p>Protect your identity when investigating. Separate personas and artifacts.</p>
+          <ul>
+            <li>Use VMs (Tails, Qubes), chain VPN → Tor for anonymity when needed.</li>
+            <li>Create believable sock puppets with legitimate backstories if interacting.</li>
+            <li>Strip EXIF and cookies before uploading images; never search targets on personal devices.</li>
+          </ul>
+        </div>
+      </article>
+
+      <!-- Step 09 -->
+      <article id="step-09" class="card" data-title="09: Advanced Geolocation" data-tags="geolocation,suncalc,mapillary">
+        <div class="step-num">09</div>
+        <h2 class="card-title">Advanced Image & Video Geolocation</h2>
+        <div class="card-meta"><span class="chip">Geo</span> <span class="muted">SunCalc, Mapillary, topography</span></div>
+        <div class="card-body">
+          <p>Use shadows, architecture, weather and terrain to verify location and time.</p>
+          <ul>
+            <li>SunCalc.net to confirm sun angle vs timestamp.</li>
+            <li>Mapillary / Yandex / Street View to visually match scenes and road signs.</li>
+            <li>Topographic maps & flight path data for disaster/strike verification.</li>
+          </ul>
+        </div>
+      </article>
+
+      <!-- Step 10 -->
+      <article id="step-10" class="card" data-title="10: Social Network Mapping" data-tags="maltego,socialmapping">
+        <div class="step-num">10</div>
+        <h2 class="card-title">Social Network Mapping</h2>
+        <div class="card-meta"><span class="chip">Mapping</span> <span class="muted">Maltego, SpiderFoot, Recon-ng</span></div>
+        <div class="card-body">
+          <p>Build relationship graphs of people, domains, and organizations.</p>
+          <ul>
+            <li>Maltego for graph-based relationships; use SocialLinks, IntelX transforms as available.</li>
+            <li>SpiderFoot / Recon-ng for automated scraping and enrichment.</li>
+            <li>Use Sherlock / WhatsMyName to enumerate aliases across platforms.</li>
+          </ul>
+        </div>
+      </article>
+
+      <!-- Step 11 -->
+      <article id="step-11" class="card" data-title="11: Corporate & Financial Recon" data-tags="corporate,opencorporates,aleph">
+        <div class="step-num">11</div>
+        <h2 class="card-title">Investigate Corporate & Financial Info</h2>
+        <div class="card-meta"><span class="chip">Corporate</span> <span class="muted">OpenCorporates, Aleph, LittleSis</span></div>
+        <div class="card-body">
+          <p>Trace ownership, directors, subsidiaries and offshore structures.</p>
+          <ul>
+            <li>OpenCorporates for registrations; Companies House for UK filings.</li>
+            <li>Aleph (OCCRP) for leaked docs, sanctions, and corruption cases.</li>
+            <li>LittleSis to map political and corporate connections.</li>
+          </ul>
+        </div>
+      </article>
+
+      <!-- Step 12 -->
+      <article id="step-12" class="card" data-title="12: Email, Breach & Credential OSINT" data-tags="breach,email,credentials">
+        <div class="step-num">12</div>
+        <h2 class="card-title">Email, Breach & Credential OSINT</h2>
+        <div class="card-meta"><span class="chip">Breach</span> <span class="muted">HaveIBeenPwned, Dehashed, EmailRep</span></div>
+        <div class="card-body">
+          <p>Check exposure, leaked dumps, and reputation of email addresses.</p>
+          <ul>
+            <li>HaveIBeenPwned / Dehashed / Scylla / LeakCheck to locate leaks and dumps.</li>
+            <li>EmailRep.io and IntelX for reputation and historical presence.</li>
+            <li>Document findings, but do not attempt to access accounts or use leaked credentials.</li>
+          </ul>
+        </div>
+      </article>
+
+      <!-- Step 13 -->
+      <article id="step-13" class="card" data-title="13: Dark Web & Forum OSINT" data-tags="darkweb,forums,tor">
+        <div class="step-num">13</div>
+        <h2 class="card-title">Dark Web & Forum OSINT (Cautious)</h2>
+        <div class="card-meta"><span class="chip">Darkweb</span> <span class="muted">Tor, IntelX, Hunchly</span></div>
+        <div class="card-body">
+          <p>Search darknet resources for leaks and actor activity — with strict OPSEC.</p>
+          <ul>
+            <li>Use Tor Browser and dark-web indexes (Ahmia, DarkSearch.io) safely.</li>
+            <li>Monitor relevant forums (avoid downloading illegal content).</li>
+            <li>Use Hunchly for archiving and maintaining an evidence chain.</li>
+          </ul>
+        </div>
+      </article>
+
+      <!-- Step 14 -->
+      <article id="step-14" class="card" data-title="14: Blockchain OSINT" data-tags="blockchain,etherscan,chainalysis">
+        <div class="step-num">14</div>
+        <h2 class="card-title">Blockchain OSINT</h2>
+        <div class="card-meta"><span class="chip">Blockchain</span> <span class="muted">Etherscan, Chainalysis, TRM</span></div>
+        <div class="card-body">
+          <p>Trace transactions, cluster wallets, and identify laundering behavior.</p>
+          <ul>
+            <li>Use Etherscan, Blockchain.com, BitQuery for public chain analysis.</li>
+            <li>For advanced attribution use Chainalysis / TRM Labs (paid).</li>
+            <li>Look for mixers, clustering patterns, and reuse of addresses across services.</li>
+          </ul>
+        </div>
+      </article>
+
+      <!-- Step 15 -->
+      <article id="step-15" class="card" data-title="15: Build Your OSINT Stack" data-tags="automation,python,stack">
+        <div class="step-num">15</div>
+        <h2 class="card-title">Build Your Own OSINT Stack (Automation)</h2>
+        <div class="card-meta"><span class="chip">Automation</span> <span class="muted">Python, SpiderFoot, Recon-ng</span></div>
+        <div class="card-body">
+          <p>Automate repetitive tasks and stitch tool outputs together.</p>
+          <ul>
+            <li>Learn Python for API integrations and custom scrapers.</li>
+            <li>Use SpiderFoot and Recon-ng to orchestrate multi-source scans.</li>
+            <li>Export results to CSV/JSON for downstream analysis (Neo4j, Kibana).</li>
+          </ul>
+        </div>
+      </article>
+
+      <!-- Step 16 -->
+      <article id="step-16" class="card" data-title="16: Maltego Best Practices" data-tags="maltego,graph,transforms">
+        <div class="step-num">16</div>
+        <h2 class="card-title">Maltego — Transform-Based Graph Analysis</h2>
+        <div class="card-meta"><span class="chip">Graph</span> <span class="muted">Transforms, clustering, OPSEC</span></div>
+        <div class="card-body">
+          <p>Use the right entity, add transforms carefully, and manage graph size.</p>
+          <ul>
+            <li>Start from a relevant entity: person, email, domain, phone, company.</li>
+            <li>Use built-in transforms and add SocialLinks/IntelX/VirusTotal where needed.</li>
+            <li>Use entity coloring, collections, and explore mode for focus; export annotated graphs for reporting.</li>
+            <li>OPSEC: do not run transforms from personal identity/IP — use proxies and API keys safely.</li>
+          </ul>
+        </div>
+      </article>
+
+      <!-- Step 17 -->
+      <article id="step-17" class="card" data-title="17: SpiderFoot & Recon-ng" data-tags="spiderfoot,recon-ng">
+        <div class="step-num">17</div>
+        <h2 class="card-title">SpiderFoot & Recon-ng</h2>
+        <div class="card-meta"><span class="chip">Automation</span> <span class="muted">CLI & GUI workflows</span></div>
+        <div class="card-body">
+          <p>Automate broad reconnaissance and chain modules for deeper sweeps.</p>
+          <ul>
+            <li>SpiderFoot for wide scans across 100+ data sources (use CLI for automation).</li>
+            <li>Recon-ng for modular, scriptable recon with API key support; export CSVs for analysis.</li>
+            <li>Run modules selectively to avoid noise (and rate limits).</li>
+          </ul>
+        </div>
+      </article>
+
+      <!-- Step 18 -->
+      <article id="step-18" class="card" data-title="18: SocialLinks & IntelX" data-tags="sociallinks,intelx">
+        <div class="step-num">18</div>
+        <h2 class="card-title">SocialLinks, IntelX & Specialized Tools</h2>
+        <div class="card-meta"><span class="chip">Deep search</span> <span class="muted">social media, leaks, historic snapshots</span></div>
+        <div class="card-body">
+          <p>Use SocialLinks for deep social media & dark-web content; IntelX for leak archival.</p>
+          <ul>
+            <li>SocialLinks CE / Pro for aggregating forum/profile data, face search (Pro).</li>
+            <li>IntelX selectors (e.g., <code>selectors:email_address name@example.com</code>) to search leaks and paste clones.</li>
+            <li>Combine outputs with HaveIBeenPwned / Dehashed for comprehensive breach mapping.</li>
+          </ul>
+        </div>
+      </article>
+
+      <!-- Step 19 -->
+      <article id="step-19" class="card" data-title="19: EXIFTool + SunCalc + Mapillary" data-tags="exiftool,suncalc,mapillary">
+        <div class="step-num">19</div>
+        <h2 class="card-title">EXIFTool + SunCalc + Mapillary Combo</h2>
+        <div class="card-meta"><span class="chip">Verification</span> <span class="muted">metadata → visual matching</span></div>
+        <div class="card-body">
+          <p>Combine metadata extraction with solar geometry and street imagery for high-confidence geolocation.</p>
+          <ul>
+            <li>Extract EXIF with <code>exiftool image.jpg</code>; load GPS into mapping tools.</li>
+            <li>Use SunCalc to verify lighting/shadow consistency with claimed timestamps.</li>
+            <li>Use Mapillary / Yandex to visually match structures and signage.</li>
+          </ul>
+        </div>
+      </article>
+
+      <!-- Step 20 -->
+      <article id="step-20" class="card" data-title="20: Shodan/Censys/FOFA & Leak Tools" data-tags="shodan,censys,breach-tools">
+        <div class="step-num">20</div>
+        <h2 class="card-title">Shodan, Censys, FOFA & Breach Tools</h2>
+        <div class="card-meta"><span class="chip">Recon</span> <span class="muted">exposed devices, breach search</span></div>
+        <div class="card-body">
+          <p>Use internet-wide search engines and breach repositories to complete the picture.</p>
+          <ul>
+            <li>Shodan / Censys queries for exposed services; FOFA for obscure filters.</li>
+            <li>HaveIBeenPwned, Dehashed, Scylla / LeakCheck for breaches and dumps.</li>
+            <li>Keep logs and always archive with Hunchly / screenshots for evidence chain.</li>
+          </ul>
+        </div>
+      </article>
+
+      <!-- Step 21 -->
+      <article id="step-21" class="card" data-title="21: Hunchly & Evidence Archiving" data-tags="hunchly,evidence,archiving">
+        <div class="step-num">21</div>
+        <h2 class="card-title">Hunchly — Archiving Your Investigation</h2>
+        <div class="card-meta"><span class="chip">Evidence</span> <span class="muted">screenshots, timestamps, URLs</span></div>
+        <div class="card-body">
+          <p>Archive every step (screenshots, metadata) to retain an auditable chain of evidence.</p>
+          <ul>
+            <li>Hunchly auto-captures pages, timestamps, and can highlight relevant keywords.</li>
+            <li>Useful for legal reporting and team handoff.</li>
+          </ul>
+        </div>
+      </article>
+
+      <!-- Step 22 -->
+      <article id="step-22" class="card" data-title="22: Personal Knowledge & Graph Tools" data-tags="obsidian,graph,neo4j">
+        <div class="step-num">22</div>
+        <h2 class="card-title">Obsidian, Graph Notebooks & Offline Graphs</h2>
+        <div class="card-meta"><span class="chip">Triage</span> <span class="muted">Obsidian, Neo4j, GraphXR</span></div>
+        <div class="card-body">
+          <p>Store notes, build local graphs, and index findings for revisit and reporting.</p>
+          <ul>
+            <li>Obsidian for markdown-based note-taking and Dataview indexing.</li>
+            <li>Use Neo4j or GraphXR if you need offline graph analytics similar to Maltego.</li>
+            <li>Keep exports of datasets, screenshots and annotated timelines in secure storage.</li>
+          </ul>
+        </div>
+      </article>
+
+      <!-- Step 23: Final best-practices -->
+      <article id="step-23" class="card" data-title="23: OPSEC Golden Rules & Reporting" data-tags="opsec,reporting">
+        <div class="step-num">23</div>
+        <h2 class="card-title">Final: OPSEC Golden Rules & Reporting</h2>
+        <div class="card-meta"><span class="chip">Policy</span> <span class="muted">legal & ethical boundaries</span></div>
+        <div class="card-body">
+          <p>Before concluding: ensure ethical handling and prepare reports.</p>
+          <ul>
+            <li>Never search real targets on personal devices; separate identity and tools.</li>
+            <li>Use burner emails/phones for operational profiles if interaction is necessary.</li>
+            <li>Archive everything, annotate evidence, and prepare clear reports (PDF/GraphML) for stakeholders.</li>
+            <li>Do not access or use leaked credentials — document but do not exploit.</li>
+          </ul>
+        </div>
+      </article>
+
+    </section>
+
+    <footer>
+      <div>Compiled: <time datetime="2025-09-26">2025-09-26</time>. Source material extracted from the OSINT guideline PDF. :contentReference[oaicite:2]{index=2}</div>
+      <div style="margin-top:6px;" class="muted">Template sanitized: no PII or leaked credentials included. Use responsibly and follow legal/ethical rules in your jurisdiction.</div>
+    </footer>
+  </main>
+</div>
+
+<script>
+  // Populate TOC from cards
+  (function(){
+    const toc = document.getElementById('toc');
+    const grid = document.getElementById('grid');
+    const cards = Array.from(grid.querySelectorAll('.card'));
+    cards.forEach(c=>{
+      const title = (c.dataset.title || c.querySelector('.card-title')?.innerText || 'Step');
+      const id = c.id;
+      const li = document.createElement('li');
+      li.innerHTML = '<a href="#'+id+'">'+title+'</a>';
+      toc.appendChild(li);
+    });
+
+    // Search / count
+    const q = document.getElementById('q');
+    const countEl = document.getElementById('count');
+    const allCards = cards;
+    function updateCount(){
+      const visible = allCards.filter(c => c.style.display !== 'none').length;
+      countEl.textContent = visible + ' / ' + allCards.length;
+    }
+    function matchCard(card, term){
+      if(!term) return true;
+      term = term.toLowerCase();
+      const title = (card.dataset.title || card.querySelector('.card-title').innerText).toLowerCase();
+      const tags = (card.dataset.tags || '').toLowerCase();
+      const text = card.innerText.toLowerCase();
+      return title.includes(term) || tags.includes(term) || text.includes(term);
+    }
+    q.addEventListener('input', ()=> {
+      const term = q.value.trim();
+      allCards.forEach(c => c.style.display = matchCard(c, term) ? '' : 'none');
+      updateCount();
+    });
+    document.getElementById('clearBtn').addEventListener('click', ()=>{ q.value=''; q.dispatchEvent(new Event('input')); q.focus(); });
+    updateCount();
+  })();
+</script>
+</body>
+</html>
