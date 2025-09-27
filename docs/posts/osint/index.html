@@ -1,481 +1,1594 @@
 <!doctype html>
 <html lang="en">
+
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>OSINT Investigation Playbook — Sequenced</title>
-<style>
-  :root{
-    --bg: #f7f8fb;
-    --card: #ffffff;
-    --muted: #6b7280;
-    --accent: #2563eb;
-    --nav-bg: #111827;
-    --nav-width: 260px;
-    --gap: 16px;
-    --radius: 10px;
-    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-  }
-  body{margin:0;background:var(--bg);color:#0f172a;}
-  .app{display:flex;min-height:100vh;}
-  nav.sidebar{
-    width:var(--nav-width);
-    background:var(--nav-bg);
-    color:#fff;
-    padding:20px 16px;
-    box-sizing:border-box;
-    position:sticky;top:0;height:100vh;overflow:auto;
-  }
-  .brand{font-weight:700;font-size:18px;margin-bottom:12px;}
-  .toc{list-style:none;padding:0;margin:0;}
-  .toc a{display:block;padding:8px 10px;border-radius:8px;color:#fff;text-decoration:none;margin-bottom:6px;}
-  .toc a:hover, .toc a:focus{background:#1f2937;color:#fff;outline:none;}
-  .main{flex:1;padding:24px;box-sizing:border-box;}
-  .controls{display:flex;gap:12px;align-items:center;margin-bottom:18px;flex-wrap:wrap;}
-  .search{flex:1;min-width:220px;}
-  input[type="search"]{
-    width:100%;padding:10px 12px;border-radius:8px;border:1px solid #e6e9ef;background:#fff;
-    box-sizing:border-box;font-size:14px;
-  }
-  .btn{background:var(--accent);color:#fff;padding:9px 12px;border-radius:8px;border:0;cursor:pointer;}
-  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:var(--gap);align-items:start;}
-  .card{background:var(--card);border-radius:var(--radius);padding:14px;box-shadow:0 1px 2px rgba(12,14,20,0.04);border:1px solid rgba(15,23,42,0.04);}
-  .step-num{display:inline-block;background:#eef2ff;color:#1e3a8a;padding:6px 10px;border-radius:8px;font-weight:700;margin-bottom:8px;}
-  .card-title{font-weight:700;margin:8px 0 6px 0;font-size:18px;}
-  .card-meta{color:var(--muted);font-size:13px;margin-bottom:10px;}
-  .card-body{font-size:14px;color:#0f172a;line-height:1.45;}
-  .chip{display:inline-block;background:#f0fdf4;color:#065f46;padding:4px 8px;border-radius:999px;font-size:12px;margin-right:6px;}
-  .muted{color:var(--muted);font-size:13px;}
-  footer{margin-top:20px;color:var(--muted);font-size:13px;}
-  @media (max-width:900px){
-    nav.sidebar{position:static;width:100%;height:auto;padding:12px;display:flex;overflow:auto;}
-    .app{flex-direction:column;}
-    .main{padding:16px;}
-  }
-</style>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>OSINT Investigation Playbook — Sequenced</title>
+    <style>
+        :root {
+            --bg: #f7f8fb;
+            --card: #ffffff;
+            --muted: #6b7280;
+            --accent: #2563eb;
+            --nav-bg: #111827;
+            --nav-width: 260px;
+            --gap: 16px;
+            --radius: 10px;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: #0f172a;
+            font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        .app {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        nav.sidebar {
+            width: var(--nav-width);
+            background: var(--nav-bg);
+            color: #fff;
+            padding: 20px 16px;
+            box-sizing: border-box;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow: auto;
+        }
+
+        .brand {
+            font-weight: 700;
+            font-size: 18px;
+            margin-bottom: 12px;
+        }
+
+        .toc {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .toc a {
+            display: block;
+            padding: 8px 10px;
+            border-radius: 8px;
+            color: #fff;
+            text-decoration: none;
+            margin-bottom: 6px;
+            transition: background 0.2s;
+        }
+
+        .toc a:hover,
+        .toc a:focus {
+            background: #1f2937;
+            color: #fff;
+            outline: none;
+        }
+
+        .main {
+            flex: 1;
+            padding: 24px;
+            box-sizing: border-box;
+        }
+
+        .controls {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+        }
+
+        .search {
+            flex: 1;
+            min-width: 220px;
+        }
+
+        input[type="search"] {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid #e6e9ef;
+            background: #fff;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        .btn {
+            background: var(--accent);
+            color: #fff;
+            padding: 9px 12px;
+            border-radius: 8px;
+            border: 0;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn:hover,
+        .btn:focus {
+            background: #1e4ed8;
+            outline: none;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: var(--gap);
+            align-items: start;
+        }
+
+        .card {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 14px;
+            box-shadow: 0 1px 2px rgba(12, 14, 20, 0.04);
+            border: 1px solid rgba(15, 23, 42, 0.04);
+        }
+
+        .step-num {
+            display: inline-block;
+            background: #eef2ff;
+            color: #1e3a8a;
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .card-title {
+            font-weight: 700;
+            margin: 8px 0 6px;
+            font-size: 18px;
+        }
+
+        .card-meta {
+            color: var(--muted);
+            font-size: 13px;
+            margin-bottom: 10px;
+        }
+
+        .card-body {
+            font-size: 14px;
+            color: #0f172a;
+            line-height: 1.45;
+        }
+
+        .chip {
+            display: inline-block;
+            background: #f0fdf4;
+            color: #065f46;
+            padding: 4px 8px;
+            border-radius: 999px;
+            font-size: 12px;
+            margin-right: 6px;
+        }
+
+        .muted {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        pre {
+            background: #f6f8fa;
+            padding: 6px;
+            border-radius: 6px;
+            margin: 6px 0;
+            white-space: pre-wrap;
+            /* ✅ Wrap long lines */
+            word-wrap: break-word;
+            /* ✅ Break long tokens/URLs */
+            overflow-wrap: anywhere;
+            /* ✅ Force wrapping if needed */
+            max-width: 100%;
+            /* ✅ Stay inside card */
+            box-sizing: border-box;
+        }
+
+        code {
+            font-family: monospace;
+            font-size: 13px;
+        }
+
+        footer {
+            margin-top: 20px;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        @media(max-width:900px) {
+            nav.sidebar {
+                position: static;
+                width: 100%;
+                height: auto;
+                padding: 12px;
+                display: flex;
+                overflow: auto;
+            }
+
+            .app {
+                flex-direction: column;
+            }
+
+            .main {
+                padding: 16px;
+            }
+        }
+    </style>
+
 </head>
+
 <body>
-<div class="app" role="application">
-  <nav class="sidebar" aria-label="Main navigation">
-    <div class="brand">OSINT Playbook — Step Sequence</div>
-    <p class="muted" style="margin:0 0 12px 0;">Follow the numbered steps in order for a thorough investigation.</p>
-    <ul class="toc" id="toc">
-      <!-- auto-generated TOC entries correspond to step IDs -->
-    </ul>
-    <hr style="border:none;border-top:1px solid rgba(255,255,255,0.06);margin:12px 0;">
-    <div class="muted">Source: OSINT guideline PDF (extracted & organized). :contentReference[oaicite:1]{index=1}</div>
-    <div style="margin-top:10px;font-size:13px;color:#e2e8f0;">
-      Notes: This template is sanitized — no personal leaked credentials are included.
+    <div class="app" role="application">
+        <nav class="sidebar" aria-label="Main navigation">
+            <div class="brand">OSINT Playbook — Step Sequence</div>
+            <p class="muted" style="margin:0 0 12px 0;">Follow the numbered steps in order for a thorough investigation.
+            </p>
+            <ul class="toc" id="toc"><!-- auto-generated TOC entries correspond to step IDs -->
+            </ul>
+            <hr style="border:none;border-top:1px solid rgba(255,255,255,0.06);margin:12px 0;">
+        </nav>
+
+        <main class="main" id="main" tabindex="-1">
+            <header style="margin-bottom:12px; text-align: center;">
+                <h1 style="margin:0 0 6px 0;font-size:22px;">OSINT Investigation — Step-By-Step</h1>
+                <p class="muted" style="margin:0 0 8px 0;">A sequenced checklist of tools & techniques to run
+                    investigations responsibly and with OPSEC.</p>
+                <div class="controls" role="region" aria-label="Controls">
+                    <div class="search" style="flex:1;">
+                        <!-- <label for="q" class="sr-only">Search items</label> -->
+                        <br>
+                        <input id="q" type="search" placeholder="Search steps, tool names or keywords..."
+                            aria-label="Search items" />
+                    </div>
+                    <button class="btn" id="clearBtn">Clear</button>
+                    <div style="margin-left:auto;" class="muted">Showing
+                        <span id="count">—</span>
+                        items
+                    </div>
+                </div>
+            </header>
+
+            <section class="grid" id="grid" aria-live="polite">
+                <!-- Step 01 -->
+                <article id="step-01" class="card" data-title="01: Google Smartly (Dorking)"
+                    data-tags="google,dorking,search">
+                    <div class="step-num">01</div>
+                    <h2 class="card-title">Google Smartly — Advanced Search (Dorking)</h2>
+                    <div class="card-meta">
+                        <span class="chip">Discovery</span>
+                        <span class="muted">Core: <code>site:</code> · <code>filetype:</code> ·
+                            <code>intitle:</code></span>
+                    </div>
+
+                    <div class="card-body">
+                        <section aria-labelledby="g-tools">
+                            <h3 id="g-tools" style="font-size:15px;">Tools</h3>
+                            <p>
+                                <a href="https://www.google.com/" target="_blank">Google</a> ·
+                                <a href="https://www.bing.com/" target="_blank">Bing</a> ·
+                                <a href="https://duckduckgo.com/" target="_blank">DuckDuckGo</a> ·
+                                <a href="https://www.shodan.io/" target="_blank">Shodan</a> ·
+                                <a href="https://search.censys.io/" target="_blank">Censys</a> ·
+                                <a href="https://commoncrawl.org/" target="_blank">CommonCrawl</a> ·
+                                <a href="https://www.exploit-db.com/google-hacking-database" target="_blank">GHDB</a> ·
+                                <a href="https://urlscan.io/" target="_blank">URLScan</a>
+                            </p>
+                        </section>
+
+                        <section aria-labelledby="g-techniques" style="margin-top:8px;">
+                            <h3 id="g-techniques" style="font-size:15px;">Techniques</h3>
+                            <ul>
+                                <li>Site-scope: <code>site:example.com "Full Name"</code></li>
+                                <li>File hunt: <code>filetype:pdf "annual report"</code></li>
+                                <li>Directory index: <code>intitle:"index of" /backup</code></li>
+                                <li>Boolean combos: <code>site:example.com (confidential OR password) -login</code></li>
+                                <li>Cross-engine validation (Google ↔ Shodan)</li>
+                                <li>Archived scans with <a href="https://urlscan.io/" target="_blank">URLScan</a></li>
+                            </ul>
+                            <!-- Example -->
+                            <pre
+                                style="background:#f6f8fa;padding:6px;border-radius:6px;"><code>site:example.com intitle:"index of" (backup OR logs) -site:github.com</code></pre>
+                        </section>
+                    </div>
+                </article>
+
+
+                <!-- Step 02 -->
+                <article id="step-02" class="card" data-title="02: Search by Email/Username/Name"
+                    data-tags="email,username,breach">
+                    <div class="step-num">02</div>
+                    <h2 class="card-title">Search by Email, Username, or Name</h2>
+                    <div class="card-meta">
+                        <span class="chip">Identity</span>
+                        <span class="muted">
+                            Tools: WhatsMyName · Sherlock · Maigret · HIBP · DeHashed · Hunter · Pipl · Clearbit ·
+                            Snov.io
+                        </span>
+                    </div>
+
+                    <div class="card-body">
+                        <section aria-labelledby="id-tools">
+                            <h3 id="id-tools" style="font-size:15px;">Tools</h3>
+                            <p>
+                                <a href="https://whatsmyname.pro/" target="_blank">WhatsMyName</a> ·
+                                <a href="https://github.com/sherlock-project/sherlock" target="_blank">Sherlock</a> ·
+                                <a href="https://github.com/soxoj/maigret" target="_blank">Maigret</a> ·
+                                <a href="https://haveibeenpwned.com/" target="_blank">HaveIBeenPwned</a> ·
+                                <a href="https://dehashed.com/" target="_blank">DeHashed</a> ·
+                                <a href="https://hunter.io/" target="_blank">Hunter</a> ·
+                                <a href="https://pipl.com/" target="_blank">Pipl</a> ·
+                                <a href="https://clearbit.com/" target="_blank">Clearbit</a> ·
+                                <a href="https://snov.io/" target="_blank">Snov.io</a>
+                            </p>
+                        </section>
+
+                        <section aria-labelledby="id-techniques" style="margin-top:8px;">
+                            <h3 id="id-techniques" style="font-size:15px;">Techniques</h3>
+                            <ul>
+                                <li>Pivot identifiers: username ↔ email ↔ name ↔ phone</li>
+                                <li>Bulk scanning with CLI (Sherlock/Maigret)</li>
+                                <li>Breach lookups via <a href="https://haveibeenpwned.com/" target="_blank">HIBP</a> &
+                                    <a href="https://dehashed.com/" target="_blank">DeHashed</a>
+                                </li>
+                                <li>Email pattern inference using <a href="https://hunter.io/"
+                                        target="_blank">Hunter</a> / <a href="https://snov.io/"
+                                        target="_blank">Snov.io</a></li>
+                                <li>Profile enrichment with <a href="https://pipl.com/" target="_blank">Pipl</a> / <a
+                                        href="https://clearbit.com/" target="_blank">Clearbit</a></li>
+                            </ul>
+
+                            <!-- Commands -->
+                            <pre
+                                style="background:#f6f8fa;padding:6px;border-radius:6px;"><code>python3 sherlock.py username --output sherlock_username.json</code></pre>
+                            <pre
+                                style="background:#f6f8fa;padding:6px;border-radius:6px;"><code>maigret username1 username2 --json -o maigret_results.json</code></pre>
+                            <pre
+                                style="background:#f6f8fa;padding:6px;border-radius:6px;"><code>curl -H "hibp-api-key: YOUR_KEY" "https://haveibeenpwned.com/api/v3/breachedaccount/test@example.com"</code></pre>
+                        </section>
+                    </div>
+                </article>
+
+
+                <!-- Step 03 -->
+                <article id="step-03" class="card" data-title="03: Image & Geo OSINT"
+                    data-tags="images,geolocation,exif">
+                    <div class="step-num">03</div>
+                    <h2 class="card-title">Analyze Images & Location (Image / Geo OSINT)</h2>
+                    <div class="card-meta">
+                        <span class="chip">Media</span>
+                        <span class="muted">
+                            Tools: Google Images · Yandex · TinEye · RevEye · FotoForensics · ExifTool · Tesseract ·
+                            SunCalc · Mapillary · Google Earth · OSM · QGIS
+                        </span>
+                    </div>
+
+                    <div class="card-body">
+                        <section aria-labelledby="img-tools">
+                            <h3 id="img-tools" style="font-size:15px;">Tools</h3>
+                            <p>
+                                <a href="https://images.google.com/" target="_blank">Google Images</a> ·
+                                <a href="https://yandex.com/images/" target="_blank">Yandex</a> ·
+                                <a href="https://tineye.com/" target="_blank">TinEye</a> ·
+                                <a href="https://chrome.google.com/webstore/detail/rev-eye-reverse-image-sear/baidbaljmpojinppkkikfkmgcjmomdcl"
+                                    target="_blank">RevEye</a> ·
+                                <a href="http://fotoforensics.com/" target="_blank">FotoForensics</a> ·
+                                <a href="https://exiftool.org/" target="_blank">ExifTool</a> ·
+                                <a href="https://tesseract-ocr.github.io/" target="_blank">Tesseract</a> ·
+                                <a href="https://suncalc.org/" target="_blank">SunCalc</a> ·
+                                <a href="https://www.mapillary.com/" target="_blank">Mapillary</a> ·
+                                <a href="https://earth.google.com/" target="_blank">Google Earth</a> ·
+                                <a href="https://www.openstreetmap.org/" target="_blank">OpenStreetMap</a> ·
+                                <a href="https://qgis.org/" target="_blank">QGIS</a>
+                            </p>
+                        </section>
+
+                        <section aria-labelledby="img-techniques" style="margin-top:8px;">
+                            <h3 id="img-techniques" style="font-size:15px;">Techniques</h3>
+                            <ul>
+                                <li>Reverse-image across Google, Yandex, TinEye</li>
+                                <li>EXIF metadata extraction with <a href="https://exiftool.org/"
+                                        target="_blank">ExifTool</a></li>
+                                <li>Image forensics via <a href="http://fotoforensics.com/"
+                                        target="_blank">FotoForensics</a></li>
+                                <li>OCR with <a href="https://tesseract-ocr.github.io/" target="_blank">Tesseract</a>
+                                </li>
+                                <li>Sun/shadow checks with <a href="https://suncalc.org/" target="_blank">SunCalc</a>
+                                </li>
+                                <li>Geolocation via <a href="https://www.mapillary.com/" target="_blank">Mapillary</a> /
+                                    <a href="https://earth.google.com/" target="_blank">Google Earth</a>
+                                </li>
+                                <li>Layering in <a href="https://qgis.org/" target="_blank">QGIS</a> / <a
+                                        href="https://www.openstreetmap.org/" target="_blank">OSM</a></li>
+                            </ul>
+
+                            <!-- Commands -->
+                            <pre
+                                style="background:#f6f8fa;padding:6px;border-radius:6px;"><code>exiftool -gpslatitude -gpslongitude -datetimeoriginal image.jpg</code></pre>
+                            <pre
+                                style="background:#f6f8fa;padding:6px;border-radius:6px;"><code>tesseract image.jpg out -l eng</code></pre>
+                        </section>
+                    </div>
+                </article>
+
+
+
+                <!-- Step 04 -->
+                <article id="step-04" class="card" data-title="04: Social Media OSINT"
+                    data-tags="social,facebook,instagram,twitter">
+                    <div class="step-num">04</div>
+                    <h2 class="card-title">Social Media OSINT</h2>
+                    <div class="card-meta">
+                        <span class="chip">Profiles</span>
+                        <span class="muted">Tools & Techniques</span>
+                    </div>
+
+                    <div class="card-body">
+                        <section aria-labelledby="sm-tools">
+                            <h3 id="sm-tools" style="font-size:15px;">Tools</h3>
+                            <p>
+                                <a href="https://github.com/twintproject/twint" target="_blank" rel="noopener">Twint</a>
+                                ·
+                                <a href="https://nitter.net" target="_blank" rel="noopener">Nitter</a> ·
+                                <a href="https://www.picuki.com" target="_blank" rel="noopener">Picuki</a> ·
+                                <a href="https://developers.facebook.com/docs/graph-api" target="_blank"
+                                    rel="noopener">Facebook Graph API</a> ·
+                                <a href="https://www.social-searcher.com" target="_blank"
+                                    rel="noopener">SocialSearcher</a> ·
+                                <a href="https://hootsuite.com" target="_blank" rel="noopener">Hootsuite</a> ·
+                                <a href="https://www.crowdtangle.com/" target="_blank" rel="noopener">CrowdTangle</a> ·
+                                <a href="https://gephi.org/" target="_blank" rel="noopener">Gephi</a> ·
+                                <a href="https://maltego.com/" target="_blank" rel="noopener">Maltego</a>
+                            </p>
+                        </section>
+
+                        <section aria-labelledby="sm-techniques" style="margin-top:8px;">
+                            <h3 id="sm-techniques" style="font-size:15px;">Techniques</h3>
+                            <ul>
+                                <li>Harvest public posts, hashtags, mentions → save JSON/CSV</li>
+                                <li>Extract mentions, URLs, hashtags, media IDs, timestamps</li>
+                                <li>Pivot across follower/following and mention graphs</li>
+                                <li>Visualize timeline activity to infer timezones and bursts</li>
+                                <li>Cross-check images via reverse-image & geo pipelines</li>
+                                <li>Expand shortened links → run WHOIS/Passive DNS</li>
+                                <li>Network graph analysis with <a href="https://gephi.org/" target="_blank">Gephi</a>
+                                    or <a href="https://maltego.com/" target="_blank">Maltego</a></li>
+                                <li>Apply NLP (NER, language detection) for entity extraction</li>
+                            </ul>
+
+                            <!-- Example Commands -->
+                            <pre><code>twint -u username -o tweets.json --json</code></pre>
+                            <pre><code>twint -s "keyword" --since 2025-01-01 -o keyword.json --json</code></pre>
+                            <pre><code>"source","target","timestamp"
+"@alice","@bob","2025-09-01T12:34:56Z"</code></pre>
+                        </section>
+                    </div>
+                </article>
+
+
+                <!-- Step 05 -->
+                <article id="step-05" class="card" data-title="05: OSINT Learning Resources"
+                    data-tags="learning,resources">
+                    <div class="step-num">05</div>
+                    <h2 class="card-title">OSINT Learning Resources</h2>
+                    <div class="card-meta">
+                        <span class="chip">Learning</span>
+                        <span class="muted">Tools & Techniques</span>
+                    </div>
+
+                    <div class="card-body">
+                        <section aria-labelledby="learn-tools">
+                            <h3 id="learn-tools" style="font-size:15px;">Tools</h3>
+                            <p>
+                                <a href="https://osintframework.com/" target="_blank" rel="noopener">OSINT Framework</a>
+                                ·
+                                <a href="https://www.bellingcat.com/" target="_blank" rel="noopener">Bellingcat</a> ·
+                                <a href="https://www.osintdojo.com/" target="_blank" rel="noopener">OSINT Dojo</a> ·
+                                <a href="https://www.tracelabs.org/" target="_blank" rel="noopener">Trace Labs</a> ·
+                                <a href="https://hacktoria.com/" target="_blank" rel="noopener">Hacktoria</a> ·
+                                <a href="https://maltego.com/" target="_blank" rel="noopener">Maltego</a> ·
+                                <a href="https://www.sans.org/cyber-security-courses/advanced-open-source-intelligence-gathering-analysis"
+                                    target="_blank" rel="noopener">SANS OSINT</a>
+                            </p>
+                        </section>
+
+                        <section aria-labelledby="learn-techniques" style="margin-top:8px;">
+                            <h3 id="learn-techniques" style="font-size:15px;">Techniques</h3>
+                            <ul>
+                                <li>Use OSINT Framework as a directory of methods/tools</li>
+                                <li>Practice in CTFs (<a href="https://www.tracelabs.org/" target="_blank">Trace
+                                        Labs</a>, <a href="https://hacktoria.com/" target="_blank">Hacktoria</a>)</li>
+                                <li>Hands-on guided labs at <a href="https://www.osintdojo.com/" target="_blank">OSINT
+                                        Dojo</a></li>
+                                <li>Study investigations at <a href="https://www.bellingcat.com/"
+                                        target="_blank">Bellingcat</a></li>
+                                <li>Specialize in areas (image forensics, blockchain, infrastructure)</li>
+                                <li>Automate simple OSINT flows with Python (requests + pandas)</li>
+                                <li>Document & publish findings for peer feedback</li>
+                            </ul>
+                        </section>
+                    </div>
+                </article>
+
+
+                <!-- Step 06 -->
+                <article id="step-06" class="card" data-title="06: Metadata Extraction & Manipulation"
+                    data-tags="metadata,exiftool,forensics">
+                    <div class="step-num">06</div>
+                    <h2 class="card-title">Metadata Extraction & Manipulation</h2>
+                    <div class="card-meta">
+                        <span class="chip">Forensics</span>
+                        <span class="muted">Tools & Techniques</span>
+                    </div>
+
+                    <div class="card-body">
+                        <section aria-labelledby="meta-tools">
+                            <h3 id="meta-tools" style="font-size:15px;">Tools</h3>
+                            <p>
+                                <a href="https://exiftool.org/" target="_blank" rel="noopener">ExifTool</a> ·
+                                <a href="https://exif.tools/" target="_blank" rel="noopener">Exif.tools</a> ·
+                                <a href="https://www.gnu.org/software/binutils/" target="_blank"
+                                    rel="noopener">strings</a> ·
+                                <a href="https://github.com/ReFirmLabs/binwalk" target="_blank"
+                                    rel="noopener">binwalk</a> ·
+                                <a href="https://www.elevenpaths.com/labtools/foca/" target="_blank"
+                                    rel="noopener">FOCA</a> ·
+                                <a href="https://github.com/simsong/bulk_extractor" target="_blank"
+                                    rel="noopener">bulk_extractor</a> ·
+                                <a href="https://pe-bear-tools.github.io/" target="_blank" rel="noopener">PE-bear</a>
+                            </p>
+                        </section>
+
+                        <section aria-labelledby="meta-techniques" style="margin-top:8px;">
+                            <h3 id="meta-techniques" style="font-size:15px;">Techniques</h3>
+                            <ul>
+                                <li>Extract full EXIF metadata with <a href="https://exiftool.org/"
+                                        target="_blank">ExifTool</a></li>
+                                <li>Dump ASCII/Unicode strings from binaries with <a
+                                        href="https://www.gnu.org/software/binutils/" target="_blank">strings</a></li>
+                                <li>Use <a href="https://github.com/ReFirmLabs/binwalk" target="_blank">binwalk</a> for
+                                    embedded file carving</li>
+                                <li>Automate bulk extraction with <a href="https://github.com/simsong/bulk_extractor"
+                                        target="_blank">bulk_extractor</a></li>
+                                <li>Inspect docs with <a href="https://www.elevenpaths.com/labtools/foca/"
+                                        target="_blank">FOCA</a> for metadata + linked resources</li>
+                                <li>Build searchable datasets (CSV/JSON → SQLite/Elastic)</li>
+                                <li>Hash results with sha256sum for provenance</li>
+                            </ul>
+
+                            <!-- Example Commands -->
+                            <pre><code>exiftool -a -u -g1 image.jpg</code></pre>
+                            <pre><code>strings -n 6 file.bin | grep "http"</code></pre>
+                            <pre><code>binwalk -e firmware.bin</code></pre>
+                            <pre><code>bulk_extractor -o outdir disk.img</code></pre>
+                        </section>
+                    </div>
+                </article>
+
+
+                <!-- Step 07 -->
+                <article id="step-07" class="card" data-title="07: Passive Infrastructure Recon"
+                    data-tags="infrastructure,shodan,dns">
+                    <div class="step-num">07</div>
+                    <h2 class="card-title">Passive Infrastructure Recon</h2>
+                    <div class="card-meta">
+                        <span class="chip">Infra</span>
+                        <span class="muted">Tools & Techniques</span>
+                    </div>
+
+                    <div class="card-body">
+                        <section aria-labelledby="infra-tools">
+                            <h3 id="infra-tools" style="font-size:15px;">Tools</h3>
+                            <p>
+                                <a href="https://www.shodan.io/" target="_blank" rel="noopener">Shodan</a> ·
+                                <a href="https://search.censys.io/" target="_blank" rel="noopener">Censys</a> ·
+                                <a href="https://securitytrails.com/" target="_blank" rel="noopener">SecurityTrails</a>
+                                ·
+                                <a href="https://dnsdumpster.com/" target="_blank" rel="noopener">DNSDumpster</a> ·
+                                <a href="https://viewdns.info/" target="_blank" rel="noopener">ViewDNS</a> ·
+                                <a href="https://builtwith.com/" target="_blank" rel="noopener">BuiltWith</a> ·
+                                <a href="https://www.wappalyzer.com/" target="_blank" rel="noopener">Wappalyzer</a> ·
+                                <a href="https://crt.sh/" target="_blank" rel="noopener">crt.sh</a> ·
+                                <a href="https://bgp.he.net/" target="_blank" rel="noopener">BGP.he.net</a> ·
+                                <a href="https://whois.domaintools.com/" target="_blank" rel="noopener">DomainTools
+                                    WHOIS</a> ·
+                                <a href="https://intelx.io/" target="_blank" rel="noopener">IntelligenceX</a>
+                            </p>
+                        </section>
+
+                        <section aria-labelledby="infra-techniques" style="margin-top:8px;">
+                            <h3 id="infra-techniques" style="font-size:15px;">Techniques</h3>
+                            <ul>
+                                <li>Run WHOIS for registrar, nameservers, creation/expiry dates</li>
+                                <li>Enumerate passive DNS to discover retired or sibling subdomains</li>
+                                <li>Query certificate transparency logs (<a href="https://crt.sh/"
+                                        target="_blank">crt.sh</a>) for hidden SAN entries</li>
+                                <li>Profile open ports & banners with <a href="https://www.shodan.io/"
+                                        target="_blank">Shodan</a> / <a href="https://search.censys.io/"
+                                        target="_blank">Censys</a></li>
+                                <li>Group hosts by ASN/BGP to map related infrastructure</li>
+                                <li>Fingerprint tech stack with <a href="https://builtwith.com/"
+                                        target="_blank">BuiltWith</a> / <a href="https://www.wappalyzer.com/"
+                                        target="_blank">Wappalyzer</a></li>
+                                <li>Track infrastructure migrations by comparing DNS + ASN history</li>
+                                <li>Export results into CSV/JSON for repeatable sweeps</li>
+                            </ul>
+
+                            <!-- Example Commands -->
+                            <pre><code>whois example.com</code></pre>
+                            <pre><code>dig +nocmd example.com ANY +noall +answer</code></pre>
+                            <pre><code>curl "https://crt.sh/?q=%25.example.com&output=json" | jq .</code></pre>
+                            <pre><code>shodan search 'org:"Example Inc" port:443'</code></pre>
+                            <pre><code>censys search 'services.service_name: "HTTP" and ip: 1.2.3.4'</code></pre>
+                        </section>
+                    </div>
+                </article>
+
+
+                <!-- Step 08 -->
+                <article id="step-08" class="card" data-title="08: Sock Puppets & OPSEC"
+                    data-tags="opsec,sockpuppet,vpn">
+                    <div class="step-num">08</div>
+                    <h2 class="card-title">Sock Puppets & Operational Security (OPSEC)</h2>
+                    <div class="card-meta">
+                        <span class="chip">OPSEC</span>
+                        <span class="muted">Tools & Techniques</span>
+                    </div>
+
+                    <div class="card-body">
+                        <section aria-labelledby="opsec-tools">
+                            <h3 id="opsec-tools" style="font-size:15px;">Tools</h3>
+                            <p>
+                                <a href="https://tails.boum.org/" target="_blank" rel="noopener">Tails OS</a> ·
+                                <a href="https://www.qubes-os.org/" target="_blank" rel="noopener">Qubes OS</a> ·
+                                <a href="https://www.torproject.org/" target="_blank" rel="noopener">Tor</a> ·
+                                <a href="https://mullvad.net/" target="_blank" rel="noopener">Mullvad VPN</a> ·
+                                <a href="https://protonvpn.com/" target="_blank" rel="noopener">ProtonVPN</a> ·
+                                <a href="https://www.veracrypt.fr/" target="_blank" rel="noopener">VeraCrypt</a> ·
+                                <a href="https://keepassxc.org/" target="_blank" rel="noopener">KeePassXC</a>
+                            </p>
+                        </section>
+
+                        <section aria-labelledby="opsec-techniques" style="margin-top:8px;">
+                            <h3 id="opsec-techniques" style="font-size:15px;">Techniques</h3>
+                            <ul>
+                                <li>Run investigations inside isolated VMs or live OS (Tails/Qubes)</li>
+                                <li>Create one sock-puppet persona per purpose (email, social, notes)</li>
+                                <li>Use VPN → Tor chaining for stronger anonymity</li>
+                                <li>Strip metadata before uploads (<a href="https://exiftool.org/"
+                                        target="_blank">ExifTool</a>)</li>
+                                <li>Encrypt notes & evidence (VeraCrypt, zip AES)</li>
+                                <li>Hash originals for provenance (<code>sha256sum file</code>)</li>
+                                <li>Rotate activity times to avoid fingerprinting by behavior</li>
+                                <li>Snapshot VMs and roll back to clean state after ops</li>
+                            </ul>
+
+                            <!-- Example Commands -->
+                            <pre><code>exiftool -all= -overwrite_original photo.jpg</code></pre>
+                            <pre><code>sha256sum photo.jpg &gt; photo.sha256</code></pre>
+                            <pre><code>torbrowser-launcher</code></pre>
+                            <pre><code>zip -er notes.zip notes_folder/</code></pre>
+                        </section>
+                    </div>
+                </article>
+
+
+                <!-- Step 09 -->
+                <article id="step-09" class="card" data-title="09: Advanced Geolocation"
+                    data-tags="geolocation,suncalc,mapillary">
+                    <div class="step-num">09</div>
+                    <h2 class="card-title">Advanced Image & Video Geolocation</h2>
+                    <div class="card-meta">
+                        <span class="chip">Geo</span>
+                        <span class="muted">Tools & Techniques</span>
+                    </div>
+
+                    <div class="card-body">
+                        <section aria-labelledby="geo-tools">
+                            <h3 id="geo-tools" style="font-size:15px;">Tools</h3>
+                            <p>
+                                <a href="https://suncalc.org/" target="_blank" rel="noopener">SunCalc</a> ·
+                                <a href="https://www.mapillary.com/" target="_blank" rel="noopener">Mapillary</a> ·
+                                <a href="https://yandex.com/maps/" target="_blank" rel="noopener">Yandex Maps</a> ·
+                                <a href="https://www.google.com/streetview/" target="_blank" rel="noopener">Google
+                                    Street View</a> ·
+                                <a href="https://opentopomap.org/" target="_blank" rel="noopener">OpenTopoMap</a> ·
+                                <a href="https://earth.google.com/" target="_blank" rel="noopener">Google Earth Pro</a>
+                                ·
+                                <a href="https://www.qgis.org/" target="_blank" rel="noopener">QGIS</a> ·
+                                <a href="https://www.flightradar24.com/" target="_blank"
+                                    rel="noopener">FlightRadar24</a> ·
+                                <a href="https://www.adsbexchange.com/" target="_blank" rel="noopener">ADSB Exchange</a>
+                            </p>
+                        </section>
+
+                        <section aria-labelledby="geo-techniques" style="margin-top:8px;">
+                            <h3 id="geo-techniques" style="font-size:15px;">Techniques</h3>
+                            <ul>
+                                <li>Extract GPS/timestamps from EXIF (<a href="https://exiftool.org/"
+                                        target="_blank">ExifTool</a>)</li>
+                                <li>Reverse-search images in Google, Yandex, TinEye</li>
+                                <li>Identify anchors: signage, architecture, terrain, vegetation</li>
+                                <li>Check sun/shadow consistency with <a href="https://suncalc.org/"
+                                        target="_blank">SunCalc</a></li>
+                                <li>Ground-truth via <a href="https://www.mapillary.com/" target="_blank">Mapillary</a>
+                                    / <a href="https://www.google.com/streetview/" target="_blank">Street View</a></li>
+                                <li>Match skylines/topography with <a href="https://www.qgis.org/"
+                                        target="_blank">QGIS</a> or <a href="https://earth.google.com/"
+                                        target="_blank">Google Earth</a></li>
+                                <li>Correlate with flight paths (<a href="https://www.flightradar24.com/"
+                                        target="_blank">FlightRadar24</a>, <a href="https://www.adsbexchange.com/"
+                                        target="_blank">ADSB Exchange</a>) when aircraft/contrails appear</li>
+                                <li>Photogrammetry with OpenMVG/COLMAP for multi-image 3D scene recon</li>
+                            </ul>
+
+                            <!-- Example Commands -->
+                            <pre><code>exiftool -gpslatitude -gpslongitude -datetimeoriginal image.jpg</code></pre>
+                            <pre><code>tesseract image.jpg out -l eng</code></pre>
+                            <pre><code>"id","lat","lon","source"
+"img1","23.78095","90.279237","EXIF"</code></pre>
+                        </section>
+                    </div>
+                </article>
+
+
+
+                <!-- Step 10 -->
+                <article id="step-10" class="card" data-title="10: Social Network Mapping"
+                    data-tags="maltego,socialmapping">
+                    <div class="step-num">10</div>
+                    <h2 class="card-title">Social Network Mapping</h2>
+                    <div class="card-meta">
+                        <span class="chip">Mapping</span>
+                        <span class="muted">Tools & Techniques</span>
+                    </div>
+
+                    <div class="card-body">
+                        <section aria-labelledby="map-tools">
+                            <h3 id="map-tools" style="font-size:15px;">Tools</h3>
+                            <p>
+                                <a href="https://www.maltego.com/" target="_blank">Maltego</a> ·
+                                <a href="https://www.spiderfoot.net/" target="_blank">SpiderFoot</a> ·
+                                <a href="https://github.com/lanmaster53/recon-ng" target="_blank">Recon-ng</a> ·
+                                <a href="https://github.com/sherlock-project/sherlock" target="_blank">Sherlock</a> ·
+                                <a href="https://whatsmyname.app/" target="_blank">WhatsMyName</a> ·
+                                <a href="https://intelx.io/" target="_blank">IntelligenceX</a> ·
+                                <a href="https://gephi.org/" target="_blank">Gephi</a> ·
+                                <a href="https://neo4j.com/" target="_blank">Neo4j</a> ·
+                                <a href="https://www.networkx.org/" target="_blank">NetworkX (Python)</a>
+                            </p>
+                        </section>
+
+                        <section aria-labelledby="map-techniques" style="margin-top:8px;">
+                            <h3 id="map-techniques" style="font-size:15px;">Techniques</h3>
+                            <ul>
+                                <li>Enumerate usernames with <a href="https://github.com/sherlock-project/sherlock"
+                                        target="_blank">Sherlock</a> / <a href="https://whatsmyname.app/"
+                                        target="_blank">WhatsMyName</a></li>
+                                <li>Run <a href="https://www.spiderfoot.net/" target="_blank">SpiderFoot</a> / <a
+                                        href="https://github.com/lanmaster53/recon-ng" target="_blank">Recon-ng</a> for
+                                    automated enrichment</li>
+                                <li>Visualize entities (people, accounts, domains, IPs) and edges in <a
+                                        href="https://gephi.org/" target="_blank">Gephi</a> or <a
+                                        href="https://www.maltego.com/" target="_blank">Maltego</a></li>
+                                <li>Export alias and mention graphs as CSV/GraphML and import into <a
+                                        href="https://neo4j.com/" target="_blank">Neo4j</a> or NetworkX</li>
+                                <li>Weight relationships by frequency/recency to identify central hubs</li>
+                                <li>Create temporal graphs (weekly/monthly snapshots) to detect coordination</li>
+                            </ul>
+
+                            <!-- Example Commands -->
+                            <pre><code>python3 sherlock.py username</code></pre>
+                            <pre><code>recon-ng
+workspaces create target
+modules load recon/domains-hosts/bing
+options set SOURCE example.com
+run
+export csv hosts.csv</code></pre>
+                            <pre><code>"source","target","relation","weight"
+"@alice","@bob","mention",3</code></pre>
+                        </section>
+                    </div>
+                </article>
+
+
+                <!-- Step 11 -->
+                <article id="step-11" class="card" data-title="11: Corporate & Financial Recon"
+                    data-tags="corporate,opencorporates,aleph">
+                    <div class="step-num">11</div>
+                    <h2 class="card-title">Corporate & Financial Recon</h2>
+                    <div class="card-meta">
+                        <span class="chip">Corporate</span>
+                        <span class="muted">Tools & Techniques</span>
+                    </div>
+
+                    <div class="card-body">
+                        <section aria-labelledby="corp-tools">
+                            <h3 id="corp-tools" style="font-size:15px;">Tools</h3>
+                            <p>
+                                <a href="https://opencorporates.com/" target="_blank">OpenCorporates</a> ·
+                                <a href="https://aleph.occrp.org/" target="_blank">Aleph OCCRP</a> ·
+                                <a href="https://littlesis.org/" target="_blank">LittleSis</a> ·
+                                <a href="https://www.gov.uk/get-information-about-a-company" target="_blank">Companies
+                                    House</a> ·
+                                <a href="https://www.occrp.org/en" target="_blank">OCCRP</a> ·
+                                <a href="https://opencorporates.com/info/using-the-api" target="_blank">OpenCorporates
+                                    API</a> ·
+                                <a href="https://www.sec.gov/edgar.shtml" target="_blank">SEC EDGAR (US)</a> ·
+                                <a href="https://beta.companieshouse.gov.uk/" target="_blank">UK Companies House API</a>
+                            </p>
+                        </section>
+
+                        <section aria-labelledby="corp-techniques" style="margin-top:8px;">
+                            <h3 id="corp-techniques" style="font-size:15px;">Techniques</h3>
+                            <ul>
+                                <li>Query company records (jurisdiction, company number, officers) via <a
+                                        href="https://opencorporates.com/" target="_blank">OpenCorporates</a></li>
+                                <li>Search <a href="https://aleph.occrp.org/" target="_blank">Aleph</a> for leaked docs,
+                                    sanctions, PEP mentions</li>
+                                <li>Map relationships (director → company, company → subsidiary) in CSV/GraphML</li>
+                                <li>Use <a href="https://littlesis.org/" target="_blank">LittleSis</a> for
+                                    political/organizational ties</li>
+                                <li>Cross-reference corporate records with filings in <a
+                                        href="https://www.sec.gov/edgar.shtml" target="_blank">SEC EDGAR</a> / <a
+                                        href="https://www.gov.uk/get-information-about-a-company"
+                                        target="_blank">Companies House</a></li>
+                                <li>Archive filings (Wayback/IA) to track name or jurisdiction changes</li>
+                            </ul>
+
+                            <!-- Example Commands -->
+                            <pre><code>curl "https://api.opencorporates.com/v0.4/companies/search?q=Example+Company"</code></pre>
+                            <pre><code>curl -u YOUR_API_KEY: "https://api.company-information.service.gov.uk/search/companies?q=Example+Company"</code></pre>
+                            <pre><code>"company","jurisdiction","status","director"
+"Example Ltd","gb","active","Alice Smith"</code></pre>
+                        </section>
+                    </div>
+                </article>
+
+
+                <!-- Step 12 -->
+                <article id="step-12" class="card" data-title="12: Email, Breach & Credential OSINT"
+                    data-tags="breach,email,credentials">
+                    <div class="step-num">12</div>
+                    <h2 class="card-title">Email, Breach & Credential OSINT</h2>
+                    <div class="card-meta">
+                        <span class="chip">Breach</span>
+                        <span class="muted">Tools & Techniques</span>
+                    </div>
+
+                    <div class="card-body">
+                        <section aria-labelledby="breach-tools">
+                            <h3 id="breach-tools" style="font-size:15px;">Tools</h3>
+                            <p>
+                                <a href="https://haveibeenpwned.com/" target="_blank">HaveIBeenPwned</a> ·
+                                <a href="https://dehashed.com/" target="_blank">DeHashed</a> ·
+                                <a href="https://emailrep.io/" target="_blank">EmailRep</a> ·
+                                <a href="https://github.com/cyberdefence-toolkit/Scylla" target="_blank">Scylla</a> ·
+                                <a href="https://intelx.io/" target="_blank">IntelligenceX</a> ·
+                                <a href="https://snusbase.com/" target="_blank">Snusbase</a> ·
+                                <a href="https://leak-lookup.com/" target="_blank">Leak-Lookup</a>
+                            </p>
+                        </section>
+
+                        <section aria-labelledby="breach-techniques" style="margin-top:8px;">
+                            <h3 id="breach-techniques" style="font-size:15px;">Techniques</h3>
+                            <ul>
+                                <li>Check exposure with <a href="https://haveibeenpwned.com/" target="_blank">HIBP</a>
+                                    API</li>
+                                <li>Search deeper leaks with <a href="https://dehashed.com/"
+                                        target="_blank">DeHashed</a>, <a href="https://intelx.io/"
+                                        target="_blank">IntelX</a>, or <a href="https://snusbase.com/"
+                                        target="_blank">Snusbase</a></li>
+                                <li>Query reputation signals via <a href="https://emailrep.io/"
+                                        target="_blank">EmailRep</a></li>
+                                <li>Pivot identifiers: email ↔ username ↔ domain ↔ phone</li>
+                                <li>Aggregate breach datasets into CSV/JSON and tag confidence levels</li>
+                                <li>Preserve provenance (timestamps, response JSON, leak IDs)</li>
+                            </ul>
+
+                            <!-- Example Commands -->
+                            <pre><code>curl -H "hibp-api-key: YOUR_KEY" "https://haveibeenpwned.com/api/v3/breachedaccount/test@example.com"</code></pre>
+                            <pre><code>curl -u API_KEY: "https://api.dehashed.com/search?query=test@example.com"</code></pre>
+                            <pre><code>curl "https://emailrep.io/test@example.com" -H "Key: YOUR_KEY"</code></pre>
+                            <pre><code>"identifier","source","breach","data_types"
+"test@example.com","HIBP","LinkedIn","email,hashed_password"</code></pre>
+                        </section>
+                    </div>
+                </article>
+
+
+                <!-- Step 13 -->
+                <article id="step-13" class="card" data-title="13: Dark Web & Forum OSINT"
+                    data-tags="darkweb,forums,tor">
+                    <div class="step-num">13</div>
+                    <h2 class="card-title">Dark Web & Forum OSINT</h2>
+                    <div class="card-meta">
+                        <span class="chip">Darkweb</span>
+                        <span class="muted">Tools & Techniques</span>
+                    </div>
+
+                    <div class="card-body">
+                        <section aria-labelledby="dw-tools">
+                            <h3 id="dw-tools" style="font-size:15px;">Tools</h3>
+                            <p>
+                                <a href="https://www.torproject.org/" target="_blank">Tor Browser</a> ·
+                                <a href="https://tails.boum.org/" target="_blank">Tails OS</a> ·
+                                <a href="https://www.qubes-os.org/" target="_blank">Qubes OS</a> ·
+                                <a href="https://ahmia.fi/" target="_blank">Ahmia</a> ·
+                                <a href="https://intelx.io/" target="_blank">IntelligenceX</a> ·
+                                <a href="https://dark.fail/" target="_blank">Dark.fail (directory)</a> ·
+                                <a href="https://hunch.ly/" target="_blank">Hunchly</a> ·
+                                <a href="https://onionshare.org/" target="_blank">OnionShare</a> ·
+                                <a href="https://archive.org/" target="_blank">Internet Archive</a>
+                            </p>
+                        </section>
+
+                        <section aria-labelledby="dw-techniques" style="margin-top:8px;">
+                            <h3 id="dw-techniques" style="font-size:15px;">Techniques</h3>
+                            <ul>
+                                <li>Discover onion services via <a href="https://ahmia.fi/" target="_blank">Ahmia</a>,
+                                    <a href="https://intelx.io/" target="_blank">IntelX</a>, and <a
+                                        href="https://dark.fail/" target="_blank">Dark.fail</a>
+                                </li>
+                                <li>Use <a href="https://tails.boum.org/" target="_blank">Tails</a> or <a
+                                        href="https://www.qubes-os.org/" target="_blank">Qubes</a> VMs for isolation
+                                </li>
+                                <li>Archive forum pages/screenshots with <a href="https://hunch.ly/"
+                                        target="_blank">Hunchly</a></li>
+                                <li>Hash and encrypt captured evidence for provenance</li>
+                                <li>Cross-reference usernames, PGP keys, and crypto wallets with clearnet OSINT (e.g.,
+                                    blockchain explorers)</li>
+                            </ul>
+
+                            <!-- Example Commands -->
+                            <pre><code>torbrowser-launcher</code></pre>
+                            <pre><code>curl "https://ahmia.fi/search/?q=keyword" -o ahmia_results.html</code></pre>
+                            <pre><code>sha256sum page.html > page.html.sha256
+zip -er archived_capture.zip page.html screenshots/</code></pre>
+                            <pre><code>onionshare evidence_folder/</code></pre>
+                        </section>
+                    </div>
+                </article>
+
+
+                <!-- Step 14 -->
+                <article id="step-14" class="card" data-title="14: Blockchain OSINT"
+                    data-tags="blockchain,etherscan,chainalysis">
+                    <div class="step-num">14</div>
+                    <h2 class="card-title">Blockchain OSINT</h2>
+                    <div class="card-meta">
+                        <span class="chip">Blockchain</span>
+                        <span class="muted">Tools & Techniques</span>
+                    </div>
+
+                    <div class="card-body">
+                        <section aria-labelledby="bc-tools">
+                            <h3 id="bc-tools" style="font-size:15px;">Tools</h3>
+                            <p>
+                                <a href="https://etherscan.io/" target="_blank">Etherscan</a> ·
+                                <a href="https://www.blockchain.com/explorer" target="_blank">Blockchain.com
+                                    Explorer</a> ·
+                                <a href="https://bitquery.io/" target="_blank">BitQuery</a> ·
+                                <a href="https://dune.com/" target="_blank">Dune Analytics</a> ·
+                                <a href="https://www.chainalysis.com/" target="_blank">Chainalysis</a> ·
+                                <a href="https://trmlabs.com/" target="_blank">TRM Labs</a> ·
+                                <a href="https://oxt.me/" target="_blank">OXT (BTC explorer)</a> ·
+                                <a href="https://www.blockchair.com/" target="_blank">Blockchair</a> ·
+                                <a href="https://walletexplorer.com/" target="_blank">WalletExplorer</a>
+                            </p>
+                        </section>
+
+                        <section aria-labelledby="bc-techniques" style="margin-top:8px;">
+                            <h3 id="bc-techniques" style="font-size:15px;">Techniques</h3>
+                            <ul>
+                                <li>Lookup address/tx/contract on <a href="https://etherscan.io/"
+                                        target="_blank">Etherscan</a> or <a href="https://www.blockchain.com/explorer"
+                                        target="_blank">Blockchain.com</a></li>
+                                <li>Apply heuristics: clustering via address reuse, multi-input txs, peel chains</li>
+                                <li>Tag exchange/mixer addresses from public lists</li>
+                                <li>Trace flows and export as CSV edge lists (from,to,value,timestamp)</li>
+                                <li>Visualize transaction graphs in Gephi / Neo4j</li>
+                                <li>Correlate on-chain flows with off-chain signals (forums, leaks, sanctions)</li>
+                            </ul>
+
+                            <!-- Example Commands -->
+                            <pre><code>curl "https://api.etherscan.io/api?module=account&action=txlist&address=0xADDRESS&apikey=YOUR_KEY"</code></pre>
+                            <pre><code>curl -X POST https://graphql.bitquery.io/ \
+  -H "X-API-KEY: YOUR_KEY" \
+  -d '{"query":"{ ethereum { transfers(receiver: {is: \"0xADDRESS\"}) { transaction { hash } amount currency {symbol} } } }"}'</code></pre>
+                            <pre><code>"tx_hash","from","to","value_wei","timestamp"
+"0xabc123","0xAAA","0xBBB",1000000000000000000,"2025-09-26T12:00:00Z"</code></pre>
+                        </section>
+                    </div>
+                </article>
+
+
+                <!-- Step 15 -->
+                <article id="step-15" class="card" data-title="15: Build Your OSINT Stack"
+                    data-tags="automation,python,stack">
+                    <div class="step-num">15</div>
+                    <h2 class="card-title">Build Your Own OSINT Stack</h2>
+                    <div class="card-meta">
+                        <span class="chip">Automation</span>
+                        <span class="muted">Tools & Techniques</span>
+                    </div>
+
+                    <div class="card-body">
+                        <section aria-labelledby="stack-tools">
+                            <h3 id="stack-tools" style="font-size:15px;">Tools</h3>
+                            <p>
+                                <a href="https://www.python.org/" target="_blank">Python</a> ·
+                                <a href="https://pandas.pydata.org/" target="_blank">pandas</a> ·
+                                <a href="https://www.spiderfoot.net/" target="_blank">SpiderFoot</a> ·
+                                <a href="https://github.com/lanmaster53/recon-ng" target="_blank">Recon-ng</a> ·
+                                <a href="https://neo4j.com/" target="_blank">Neo4j</a> ·
+                                <a href="https://gephi.org/" target="_blank">Gephi</a> ·
+                                <a href="https://www.elastic.co/kibana" target="_blank">Kibana</a> ·
+                                <a href="https://airflow.apache.org/" target="_blank">Apache Airflow</a> ·
+                                <a href="https://www.scrapy.org/" target="_blank">Scrapy</a>
+                            </p>
+                        </section>
+
+                        <section aria-labelledby="stack-techniques" style="margin-top:8px;">
+                            <h3 id="stack-techniques" style="font-size:15px;">Techniques</h3>
+                            <ul>
+                                <li>Automate API pulls (WHOIS, Shodan, Etherscan, breach data)</li>
+                                <li>Normalize data (lowercase emails, ISO timestamps, standard JSON schema)</li>
+                                <li>Store raw + cleaned outputs (JSON + CSV) for reproducibility</li>
+                                <li>Ingest into graph DBs (Neo4j) or dashboards (Kibana)</li>
+                                <li>Orchestrate pipelines with Airflow / cron jobs</li>
+                                <li>Script crawlers with <a href="https://www.scrapy.org/" target="_blank">Scrapy</a> or
+                                    custom Python</li>
+                            </ul>
+
+                            <!-- Example Snippets -->
+                            <pre><code>import requests, csv
+r = requests.get("https://whois.example/api/v1/domain/example.com?api_key=YOUR_KEY")
+data = r.json()
+with open("domain.csv","w") as f:
+  writer = csv.DictWriter(f, fieldnames=["domain","registrar","created","expires"])
+  writer.writeheader()
+  writer.writerow({"domain": "example.com", "registrar": data["registrar"], "created": data["created_date"], "expires": data["expiry_date"]})</code></pre>
+
+                            <pre><code>twint -u username -o tweets.json --json</code></pre>
+                            <pre><code>curl "https://api.etherscan.io/api?module=account&action=txlist&address=0xADDRESS&apikey=YOUR_KEY" > txs.json</code></pre>
+                            <pre><code>"source","target","type","timestamp"
+"example.com","1.2.3.4","resolves_to","2025-09-26T12:00:00Z"</code></pre>
+                        </section>
+                    </div>
+                </article>
+
+
+                <!-- Step 16 -->
+                <article id="step-16" class="card" data-title="16: Maltego Best Practices"
+                    data-tags="maltego,graph,transforms">
+                    <div class="step-num">16</div>
+                    <h2 class="card-title">Maltego — Transform-Based Graph Analysis</h2>
+                    <div class="card-meta">
+                        <span class="chip">Graph</span>
+                        <span class="muted">Tools & Techniques</span>
+                    </div>
+
+                    <div class="card-body">
+                        <section aria-labelledby="mal-tools">
+                            <h3 id="mal-tools" style="font-size:15px;">Tools</h3>
+                            <p>
+                                <a href="https://www.maltego.com/" target="_blank">Maltego</a> ·
+                                <a href="https://www.paterva.com/" target="_blank">Paterva</a> ·
+                                <a href="https://www.sociallinks.io/" target="_blank">SocialLinks</a> ·
+                                <a href="https://intelx.io/" target="_blank">IntelX</a> ·
+                                <a href="https://www.virustotal.com/" target="_blank">VirusTotal</a> ·
+                                <a href="https://www.haveibeenpwned.com/" target="_blank">HIBP (via transforms)</a> ·
+                                <a href="https://otx.alienvault.com/" target="_blank">AlienVault OTX</a>
+                            </p>
+                        </section>
+
+                        <section aria-labelledby="mal-techniques" style="margin-top:8px;">
+                            <h3 id="mal-techniques" style="font-size:15px;">Techniques</h3>
+                            <ul>
+                                <li>Seed with canonical identifiers (lowercased emails, FQDNs, exact org names)</li>
+                                <li>Run **selective transforms** (WHOIS, CT, SocialLinks) instead of "run-all"</li>
+                                <li>Use **collections and filters** to manage graph complexity</li>
+                                <li>Annotate nodes/edges with provenance (transform name, timestamp, API source)</li>
+                                <li>Export GraphML/CSV for reproducibility and sharing</li>
+                            </ul>
+
+                            <!-- Example Snippets -->
+                            <pre><code>1) Add seed entity (example.com)
+2) Run 'DNS from Domain' transform
+3) Run 'WHOIS from Domain'
+4) Run 'Certificates (CT)' to reveal SANs
+5) Run SocialLinks transforms on emails/handles</code></pre>
+
+                            <pre><code>File → Export → GraphML / CSV → include provenance columns</code></pre>
+
+                            <pre><code>"source_id","target_id","relation","source"
+"domain:example.com","ip:1.2.3.4","resolves_to","WHOIS"</code></pre>
+                        </section>
+                    </div>
+                </article>
+
+
+                <!-- Step 17 -->
+                <article id="step-17" class="card" data-title="17: SpiderFoot & Recon-ng"
+                    data-tags="spiderfoot,recon-ng">
+                    <div class="step-num">17</div>
+                    <h2 class="card-title">SpiderFoot & Recon-ng</h2>
+                    <div class="card-meta">
+                        <span class="chip">Automation</span>
+                        <span class="muted">Tools & Techniques</span>
+                    </div>
+
+                    <div class="card-body">
+                        <section aria-labelledby="sf-tools">
+                            <h3 id="sf-tools" style="font-size:15px;">Tools</h3>
+                            <p>
+                                <a href="https://www.spiderfoot.net/" target="_blank">SpiderFoot</a> ·
+                                <a href="https://github.com/lanmaster53/recon-ng" target="_blank">Recon-ng</a> ·
+                                <a href="https://gephi.org/" target="_blank">Gephi</a> ·
+                                <a href="https://neo4j.com/" target="_blank">Neo4j</a> ·
+                                <a href="https://shodan.io/" target="_blank">Shodan</a> ·
+                                <a href="https://censys.io/" target="_blank">Censys</a>
+                            </p>
+                        </section>
+
+                        <section aria-labelledby="sf-techniques" style="margin-top:8px;">
+                            <h3 id="sf-techniques" style="font-size:15px;">Techniques</h3>
+                            <ul>
+                                <li>Use SpiderFoot for broad sweeps (DNS, WHOIS, Shodan modules)</li>
+                                <li>Use Recon-ng for modular, scriptable enrichment with workspaces</li>
+                                <li>Inject API keys via `keys add` (never hardcode)</li>
+                                <li>Export raw + normalized JSON/CSV for reproducibility</li>
+                                <li>Visualize outputs in Gephi/Neo4j for clustering</li>
+                            </ul>
+
+                            <!-- Example Snippets -->
+                            <pre><code>docker run -d --name spiderfoot -p 5001:5001 spiderfoot/spiderfoot
+# open http://localhost:5001/</code></pre>
+
+                            <pre><code>sf.py -s example.com -o spider_output.json --modules net.whois,api.shodan</code></pre>
+
+                            <pre><code>recon-ng
+workspace create target
+modules load recon/domains-hosts/whois_pocs
+options set SOURCE example.com
+run
+export csv hosts.csv</code></pre>
+
+                            <pre><code>"source","target","relation","timestamp"
+"example.com","1.2.3.4","resolves_to","2025-09-26T12:00:00Z"</code></pre>
+                        </section>
+                    </div>
+                </article>
+
+
+                <!-- Step 18 -->
+                <article id="step-18" class="card" data-title="18: SocialLinks & IntelX" data-tags="sociallinks,intelx">
+                    <div class="step-num">18</div>
+                    <h2 class="card-title">SocialLinks, IntelX & Specialized Tools</h2>
+                    <div class="card-meta">
+                        <span class="chip">Deep search</span>
+                        <span class="muted">Tools & Techniques</span>
+                    </div>
+
+                    <div class="card-body">
+                        <section aria-labelledby="sl-tools">
+                            <h3 id="sl-tools" style="font-size:15px;">Tools</h3>
+                            <p>
+                                <a href="https://www.sociallinks.io/" target="_blank">SocialLinks</a> ·
+                                <a href="https://intelx.io/" target="_blank">IntelX</a> ·
+                                <a href="https://haveibeenpwned.com/" target="_blank">HaveIBeenPwned</a> ·
+                                <a href="https://dehashed.com/" target="_blank">DeHashed</a> ·
+                                <a href="https://maltego.com/" target="_blank">Maltego (with SL/IntelX transforms)</a> ·
+                                <a href="https://github.com/sherlock-project/sherlock" target="_blank">Sherlock</a>
+                            </p>
+                        </section>
+
+                        <section aria-labelledby="sl-techniques" style="margin-top:8px;">
+                            <h3 id="sl-techniques" style="font-size:15px;">Techniques</h3>
+                            <ul>
+                                <li>Run SocialLinks collectors for social profiles, forums, avatars</li>
+                                <li>Use IntelX selectors for emails, phones, IPs, onion addresses</li>
+                                <li>Combine SL + IntelX results with breach lookups (HIBP, DeHashed)</li>
+                                <li>Normalize and deduplicate identifiers before graphing</li>
+                                <li>Preserve provenance (timestamps, evidence URLs, export IDs)</li>
+                            </ul>
+
+                            <!-- Example Snippets -->
+                            <pre><code>1) SocialLinks → Add seed (email/username)
+2) Run collectors (profiles/forums)
+3) Export results as CSV/JSON</code></pre>
+
+                            <pre><code>selectors:email_address name@example.com
+selectors:phone_number +8801XXXXXXXXX
+selectors:ip_address 1.2.3.4</code></pre>
+
+                            <pre><code>"id","identifier","source","evidence_url","first_seen"
+"row1","name@example.com","IntelX","https://intelx.io/view/xxxx","2024-11-02"</code></pre>
+                        </section>
+                    </div>
+                </article>
+
+
+                <!-- Step 19 -->
+                <article id="step-19" class="card" data-title="19: EXIFTool + SunCalc + Mapillary"
+                    data-tags="exiftool,suncalc,mapillary">
+                    <div class="step-num">19</div>
+                    <h2 class="card-title">EXIFTool + SunCalc + Mapillary Combo</h2>
+                    <div class="card-meta">
+                        <span class="chip">Verification</span>
+                        <span class="muted">Tools & Techniques</span>
+                    </div>
+
+                    <div class="card-body">
+                        <section aria-labelledby="exif-tools">
+                            <h3 id="exif-tools" style="font-size:15px;">Tools</h3>
+                            <p>
+                                <a href="https://exiftool.org/" target="_blank">ExifTool</a> ·
+                                <a href="https://suncalc.org/" target="_blank">SunCalc</a> ·
+                                <a href="https://www.mapillary.com/" target="_blank">Mapillary</a> ·
+                                <a href="https://yandex.com/maps/" target="_blank">Yandex Maps</a> ·
+                                <a href="https://www.google.com/streetview/" target="_blank">Google Street View</a> ·
+                                <a href="https://opentopomap.org/" target="_blank">OpenTopoMap</a> ·
+                                <a href="https://www.qgis.org/" target="_blank">QGIS</a>
+                            </p>
+                        </section>
+
+                        <section aria-labelledby="exif-techniques" style="margin-top:8px;">
+                            <h3 id="exif-techniques" style="font-size:15px;">Techniques</h3>
+                            <ul>
+                                <li>Extract GPS & timestamps with ExifTool (`-gpslatitude`, `-gpslongitude`,
+                                    `-datetimeoriginal`).</li>
+                                <li>Convert coordinates to decimal (`-n` flag) for mapping and SunCalc.</li>
+                                <li>Cross-check shadow bearings against solar azimuth from SunCalc.</li>
+                                <li>Use Mapillary, Street View, or Yandex imagery for visual ground-truthing.</li>
+                                <li>Store provenance: EXIF dumps, SunCalc snapshots, and matched map URLs.</li>
+                            </ul>
+
+                            <!-- Example Snippets -->
+                            <pre><code>exiftool -gpslatitude -gpslongitude -datetimeoriginal -Model image.jpg</code></pre>
+                            <pre><code>exiftool -n -csv -gpslatitude -gpslongitude -datetimeoriginal image.jpg</code></pre>
+                            <pre><code>1) Open https://suncalc.org/
+2) Enter latitude, longitude, and EXIF datetime
+3) Compare sun azimuth with shadow in photo</code></pre>
+                            <pre><code>"id","lat","lon","source","datetime"
+"img1","23.78095","90.279237","EXIF","2025-09-26T08:15:00"</code></pre>
+                        </section>
+                    </div>
+                </article>
+
+
+                <!-- Step 20 -->
+                <article id="step-20" class="card" data-title="20: Shodan/Censys/FOFA & Leak Tools"
+                    data-tags="shodan,censys,breach-tools">
+                    <div class="step-num">20</div>
+                    <h2 class="card-title">Shodan, Censys, FOFA & Breach Tools</h2>
+                    <div class="card-meta">
+                        <span class="chip">Recon</span>
+                        <span class="muted">Tools & Techniques</span>
+                    </div>
+
+                    <div class="card-body">
+                        <section aria-labelledby="recon-tools">
+                            <h3 id="recon-tools" style="font-size:15px;">Tools</h3>
+                            <p>
+                                <a href="https://www.shodan.io/" target="_blank">Shodan</a> ·
+                                <a href="https://censys.io/" target="_blank">Censys</a> ·
+                                <a href="https://fofa.so/" target="_blank">FOFA</a> ·
+                                <a href="https://haveibeenpwned.com/" target="_blank">HaveIBeenPwned</a> ·
+                                <a href="https://dehashed.com/" target="_blank">DeHashed</a> ·
+                                <a href="https://github.com/cyberdefence-toolkit/Scylla" target="_blank">Scylla</a> ·
+                                <a href="https://hunch.ly/" target="_blank">Hunchly</a>
+                            </p>
+                        </section>
+
+                        <section aria-labelledby="recon-techniques" style="margin-top:8px;">
+                            <h3 id="recon-techniques" style="font-size:15px;">Techniques</h3>
+                            <ul>
+                                <li>Use Shodan & Censys for host banners, TLS certs, and port exposure.</li>
+                                <li>Craft FOFA queries to hunt for unique webapp/device signatures.</li>
+                                <li>Cross-check emails & usernames from leaks (HIBP, DeHashed, Scylla).</li>
+                                <li>Prioritize critical exposures (public consoles, outdated services).</li>
+                                <li>Archive findings with Hunchly, JSON dumps, and checksums.</li>
+                            </ul>
+
+                            <!-- Example Snippets -->
+                            <pre><code>shodan search "http.title:\"Admin\" port:80" --limit 100
+shodan host 1.2.3.4</code></pre>
+                            <pre><code>censys search 'services.service_name: "HTTP" and parsed.http.response.body: "Welcome"'</code></pre>
+                            <pre><code>FOFA query: app="Apache" && country="US"</code></pre>
+                            <pre><code>curl -H "hibp-api-key: YOUR_KEY" \
+"https://haveibeenpwned.com/api/v3/breachedaccount/test@example.com"</code></pre>
+                            <pre><code>"target","type","value","source","checked_at"
+"example.com","banner","Apache/2.4.29","Shodan","2025-09-26T12:00:00Z"</code></pre>
+                        </section>
+                    </div>
+                </article>
+
+
+                <!-- Step 21 -->
+                <article id="step-21" class="card" data-title="21: Hunchly & Evidence Archiving"
+                    data-tags="hunchly,evidence,archiving">
+                    <div class="step-num">21</div>
+                    <h2 class="card-title">Hunchly — Archiving Your Investigation</h2>
+                    <div class="card-meta">
+                        <span class="chip">Evidence</span>
+                        <span class="muted">Tools & Techniques</span>
+                    </div>
+
+                    <div class="card-body">
+                        <section aria-labelledby="hunchly-tools">
+                            <h3 id="hunchly-tools" style="font-size:15px;">Tools</h3>
+                            <p>
+                                <a href="https://hunch.ly/" target="_blank">Hunchly</a> ·
+                                <a href="https://web.archive.org/" target="_blank">Wayback</a> ·
+                                <a href="https://archive.today/" target="_blank">Archive.today</a> ·
+                                <a href="https://www.zotero.org/" target="_blank">Zotero</a> ·
+                                <a href="https://gpgtools.org/" target="_blank">GPG / OpenPGP</a>
+                            </p>
+                        </section>
+
+                        <section aria-labelledby="hunchly-techniques" style="margin-top:8px;">
+                            <h3 id="hunchly-techniques" style="font-size:15px;">Techniques</h3>
+                            <ul>
+                                <li>Enable auto-capture in Hunchly to timestamp visits.</li>
+                                <li>Tag and annotate evidence as you browse.</li>
+                                <li>Export HTML/CSV/PDF and bundle with raw captures.</li>
+                                <li>Push critical pages to Wayback/Archive.today for redundancy.</li>
+                                <li>Archive securely (zip + AES, GPG encryption, manifest with hashes).</li>
+                            </ul>
+
+                            <!-- Example Snippets -->
+                            <pre><code>wget -E -H -k -K -p "https://example.com/page" -O saved_page.html</code></pre>
+                            <pre><code>sha256sum saved_page.html > saved_page.html.sha256</code></pre>
+                            <pre><code>zip -er investigation_case_2025-09-26.zip captured_files/</code></pre>
+                            <pre><code>"id","filename","type","source_url","captured_at","sha256"
+"p001","saved_page.html","html","https://example.com/page","2025-09-26T12:00:00Z","<sha256hash>"</code></pre>
+                        </section>
+                    </div>
+                </article>
+
+
+
+                <!-- Step 22 -->
+                <article id="step-22" class="card" data-title="22: Personal Knowledge & Graph Tools"
+                    data-tags="obsidian,graph,neo4j">
+                    <div class="step-num">22</div>
+                    <h2 class="card-title">Obsidian, Graph Notebooks & Offline Graphs</h2>
+                    <div class="card-meta">
+                        <span class="chip">Triage</span>
+                        <span class="muted">Tools & Techniques</span>
+                    </div>
+
+                    <div class="card-body">
+                        <!-- Tools -->
+                        <section aria-labelledby="pk-tools">
+                            <h3 id="pk-tools" style="font-size:15px;">Tools</h3>
+                            <p>
+                                <a href="https://obsidian.md/" target="_blank">Obsidian</a> ·
+                                <a href="https://github.com/blacksmithgu/obsidian-dataview" target="_blank">Dataview
+                                    Plugin</a> ·
+                                <a href="https://github.com/denolehov/obsidian-git" target="_blank">Obsidian Git</a> ·
+                                <a href="https://logseq.com/" target="_blank">Logseq</a> ·
+                                <a href="https://neo4j.com/" target="_blank">Neo4j</a> ·
+                                <a href="https://gephi.org/" target="_blank">Gephi</a> ·
+                                <a href="https://graphxr.zblabs.com/" target="_blank">GraphXR</a> ·
+                                <a href="https://kumu.io/" target="_blank">Kumu</a> ·
+                                <a href="https://www.yworks.com/yed-live/" target="_blank">yEd Live</a>
+                            </p>
+                        </section>
+
+                        <!-- Techniques -->
+                        <section aria-labelledby="pk-techniques" style="margin-top:8px;">
+                            <h3 id="pk-techniques" style="font-size:15px;">Techniques</h3>
+                            <ul>
+                                <li>Use **Obsidian/Logseq** vaults as canonical evidence notebooks.</li>
+                                <li>Standardize YAML frontmatter: IDs, aliases, sources, confidence.</li>
+                                <li>Link entities with `related:` fields for graph exports.</li>
+                                <li>Export nodes/edges as CSV → load into Neo4j, Gephi, or GraphXR.</li>
+                                <li>Automate vault-to-graph sync with scripts or Obsidian Git.</li>
+                            </ul>
+
+                            <!-- Example Snippets -->
+                            <pre><code>---
+id: org-001
+type: Organization
+name: "Acme Corp"
+aliases: ["acme-inc"]
+source_urls: ["https://opencorporates.com/companies/gb/01234567"]
+confidence: high
+related:
+  - id: person-123
+    relation: director
+---</code></pre>
+
+                            <pre><code>table id, type, name, confidence
+from "entities"
+where type
+sort created desc</code></pre>
+
+                            <pre><code>"id","label","type","name","confidence"
+"org-001","Organization","Org","Acme Corp","high"</code></pre>
+
+                            <pre><code>"source","target","relation"
+"person-123","org-001","director"</code></pre>
+
+                            <pre><code>LOAD CSV WITH HEADERS FROM 'file:///nodes.csv' AS r
+MERGE (n:Entity {id: r.id})
+SET n.type = r.type, n.name = r.name;
+
+LOAD CSV WITH HEADERS FROM 'file:///edges.csv' AS r
+MATCH (a:Entity {id: r.source}), (b:Entity {id: r.target})
+MERGE (a)-[:REL {type:r.relation}]->(b);</code></pre>
+                        </section>
+
+                        <!-- Pro tips -->
+                        <section aria-labelledby="pk-protips" style="margin-top:8px;">
+                            <h3 id="pk-protips" style="font-size:15px;">Pro tips (Expert)</h3>
+                            <ul>
+                                <li>Use **persistent IDs** (`org-001`, `person-123`) to avoid duplicates.</li>
+                                <li>Keep **provenance fields** (`captured_at`, `evidence_id`) in notes.</li>
+                                <li>Automate **JSON → CSV → Graph** pipelines with Python.</li>
+                                <li>Maintain **offline vaults** and encrypted backups for sensitive cases.</li>
+                                <li>Prefer lightweight tools (yEd, Kumu) for fast triage before deep Neo4j work.</li>
+                            </ul>
+                        </section>
+                    </div>
+                </article>
+
+
+                <!-- Step 23 -->
+                <article id="step-23" class="card" data-title="23: OPSEC Golden Rules & Reporting"
+                    data-tags="opsec,reporting">
+                    <div class="step-num">23</div>
+                    <h2 class="card-title">Final: OPSEC Golden Rules & Reporting</h2>
+
+                    <div class="card-meta">
+                        <span class="chip">Policy</span>
+                        <span class="muted">Tools & Techniques</span>
+                    </div>
+
+                    <div class="card-body">
+                        <!-- OPSEC Tools -->
+                        <section aria-labelledby="opsec-tools">
+                            <h3 id="opsec-tools" style="font-size:15px;">Tools</h3>
+                            <p>
+                                <a href="https://hunch.ly/" target="_blank" rel="noopener">Hunchly</a> ·
+                                <a href="https://archive.today/" target="_blank" rel="noopener">Archive.today</a> ·
+                                <a href="https://web.archive.org/" target="_blank" rel="noopener">Internet Archive</a> ·
+                                <a href="https://www.zotero.org/" target="_blank" rel="noopener">Zotero</a> ·
+                                <a href="https://www.eff.org/" target="_blank" rel="noopener">EFF Privacy Tools</a> ·
+                                <a href="https://www.icrc.org/en/document/osint" target="_blank" rel="noopener">ICRC
+                                    OSINT Guidelines</a> ·
+                                <a href="https://gpgtools.org/" target="_blank" rel="noopener">GPG / OpenPGP</a>
+                            </p>
+                        </section>
+
+                        <!-- Techniques -->
+                        <section aria-labelledby="opsec-techniques" style="margin-top:8px;">
+                            <h3 id="opsec-techniques" style="font-size:15px;">Techniques</h3>
+                            <ul>
+                                <li><strong>Separation:</strong> run investigations in VMs, Tails/Qubes, or dedicated
+                                    hardware.</li>
+                                <li><strong>Compartmentalization:</strong> use burner accounts, disposable emails,
+                                    isolated VPNs.</li>
+                                <li><strong>Provenance-first:</strong> capture raw HTML, JSON, screenshots, and hash
+                                    with <code>sha256sum</code>.</li>
+                                <li><strong>Encrypt & backup:</strong> archive cases with AES/GPG and keep redundant
+                                    secure copies.</li>
+                                <li><strong>Report integrity:</strong> timestamp and checksum evidence; keep manifests
+                                    for reproducibility.</li>
+                            </ul>
+                        </section>
+
+                        <!-- Example Commands -->
+                        <section aria-labelledby="opsec-commands" style="margin-top:8px;">
+                            <h3 id="opsec-commands" style="font-size:15px;">Example Commands</h3>
+                            <pre><code>sha256sum captured_page.html > captured_page.html.sha256</code></pre>
+                            <pre><code>zip -er case_CFR-2025-001_raw.zip captured_files/ evidence_manifest.csv</code></pre>
+                            <pre><code>"evidence_id","filename","type","url","captured_at","sha256"
+"ev001","page.html","html","https://example.com/x","2025-09-26T12:00:00Z","<sha256>"</code></pre>
+                            <pre><code>---
+case_id: CFR-2025-001
+title: "Investigation: Example Infra & Leak Mapping"
+prepared_by: Analyst001
+date: 2025-09-26
+scope: "Public OSINT, no private access"
+summary: "Concise findings summary here"
+evidence_manifest: evidence_manifest.csv
+---</code></pre>
+                        </section>
+
+                        <!-- Pro Tips -->
+                        <section aria-labelledby="opsec-protips" style="margin-top:8px;">
+                            <h3 id="opsec-protips" style="font-size:15px;">Pro Tips</h3>
+                            <ul>
+                                <li>Keep one <strong>canonical encrypted bundle</strong> per case with an audit log.
+                                </li>
+                                <li>Enforce <strong>access controls</strong> & retention schedules for evidence.</li>
+                                <li>Document <strong>queries, API calls & timestamps</strong> for reproducibility.</li>
+                                <li>Separate <strong>executive summary</strong> (findings & risks) from
+                                    <strong>technical appendix</strong> (evidence, manifests).</li>
+                                <li>Use <strong>timestamping services</strong> to prove evidence integrity.</li>
+                            </ul>
+                        </section>
+                    </div>
+                </article>
+
+
+
+            </section>
+
+            <footer>
+                <div style="text-align: center;">
+                    &copy;
+                    <span id="year"></span>
+                    Created by
+                    <a href="https://nemocyberwrold.github.io" target="_blank" rel="noopener">Captain Nemo</a>,
+                    in collaboration with
+                    <a href="https://hacktolive.net" target="_blank" rel="noopener">HackToLive Academy</a>.
+                </div>
+            </footer>
+
+            <script>
+                // Auto-update year
+                document.getElementById("year").textContent = new Date().getFullYear();
+            </script>
+
+        </main>
     </div>
-  </nav>
 
-  <main class="main" id="main" tabindex="-1">
-    <header style="margin-bottom:12px;">
-      <h1 style="margin:0 0 6px 0;font-size:22px;">OSINT Investigation — Step-by-step</h1>
-      <p class="muted" style="margin:0 0 8px 0;">A sequenced checklist of tools & techniques to run investigations responsibly and with OPSEC.</p>
-      <div class="controls" role="region" aria-label="Controls">
-        <div class="search" style="flex:1;">
-          <label for="q" class="sr-only">Search items</label>
-          <input id="q" type="search" placeholder="Search steps, tool names or keywords..." aria-label="Search items" />
-        </div>
-        <button class="btn" id="clearBtn">Clear</button>
-        <div style="margin-left:auto;" class="muted">Showing <span id="count">—</span> items</div>
-      </div>
-    </header>
+    <script>
+        // Populate TOC from cards
+        (function () {
+            const toc = document.getElementById('toc');
+            const grid = document.getElementById('grid');
+            const cards = Array.from(grid.querySelectorAll('.card'));
+            cards.forEach(c => {
+                const title = (c.dataset.title || c.querySelector('.card-title')?.innerText || 'Step');
+                const id = c.id;
+                const li = document.createElement('li');
+                li.innerHTML = '<a href="#' + id + '">' + title + '</a>';
+                toc.appendChild(li);
+            });
 
-    <section class="grid" id="grid" aria-live="polite">
-      <!-- Step 01 -->
-      <article id="step-01" class="card" data-title="01: Google Smartly (Dorking)" data-tags="google,dorking,search">
-        <div class="step-num">01</div>
-        <h2 class="card-title">Google Smartly — Advanced Search (Dorking)</h2>
-        <div class="card-meta"><span class="chip">Discovery</span> <span class="muted">Core: site:, filetype:, intitle:</span></div>
-        <div class="card-body">
-          <p>Use advanced Google operators to uncover exposed files, directories, or scoped results.</p>
-          <ul>
-            <li><strong>Examples:</strong> <code>site:facebook.com "Full Name"</code>, <code>filetype:pdf site:gov.bd "budget"</code>, <code>intitle:index.of</code></li>
-            <li><strong>Goal:</strong> find public documents, open directories, or scoped content related to target.</li>
-          </ul>
-        </div>
-      </article>
+            // Search / count
+            const q = document.getElementById('q');
+            const countEl = document.getElementById('count');
+            const allCards = cards;
+            function updateCount() {
+                const visible = allCards.filter(c => c.style.display !== 'none').length;
+                countEl.textContent = visible + ' / ' + allCards.length;
+            }
+            function matchCard(card, term) {
+                if (!term)
+                    return true;
 
-      <!-- Step 02 -->
-      <article id="step-02" class="card" data-title="02: Search by Email/Username/Name" data-tags="email,username,breach">
-        <div class="step-num">02</div>
-        <h2 class="card-title">Search by Email, Username, or Name</h2>
-        <div class="card-meta"><span class="chip">Identity</span> <span class="muted">Tools: WhatsMyName, HaveIBeenPwned, Hunter</span></div>
-        <div class="card-body">
-          <p>Start with the identity pivot: email ↔ username ↔ name. Use these to expand to social profiles and breaches.</p>
-          <ul>
-            <li>WhatsMyName / Maigret / Sherlock — scan username across platforms.</li>
-            <li>HaveIBeenPwned, Dehashed, Scylla — check breach exposure.</li>
-            <li>Hunter.io — find email patterns for a domain.</li>
-          </ul>
-        </div>
-      </article>
 
-      <!-- Step 03 -->
-      <article id="step-03" class="card" data-title="03: Image & Geo OSINT" data-tags="images,geolocation,exif">
-        <div class="step-num">03</div>
-        <h2 class="card-title">Analyze Images & Location (Image / Geo OSINT)</h2>
-        <div class="card-meta"><span class="chip">Media</span> <span class="muted">Tools: Google / Yandex / Exif.tools</span></div>
-        <div class="card-body">
-          <p>Extract EXIF/metadata, reverse-image, and geolocate visual clues.</p>
-          <ul>
-            <li>Google Reverse Image, Yandex Image Search for visual matches.</li>
-            <li>Exif.tools / ExifTool to extract GPS, timestamp, device info.</li>
-            <li>Use GeoSpy / SunCalc / Mapillary / Yandex Street View to verify and triangulate locations.</li>
-          </ul>
-        </div>
-      </article>
 
-      <!-- Step 04 -->
-      <article id="step-04" class="card" data-title="04: Social Media OSINT" data-tags="social,facebook,instagram,twitter">
-        <div class="step-num">04</div>
-        <h2 class="card-title">Social Media OSINT</h2>
-        <div class="card-meta"><span class="chip">Profiles</span> <span class="muted">Tools: Twint, Picuki, InstaLooker</span></div>
-        <div class="card-body">
-          <p>Collect public social media traces, posts, friends, and metadata.</p>
-          <ul>
-            <li>Use platform-specific tooling or scrapers (Twint for Twitter, Graph APIs where permitted).</li>
-            <li>Picuki / InstaLooker for anonymous Instagram viewing.</li>
-            <li>Map a target's network and note access patterns/timezones.</li>
-          </ul>
-        </div>
-      </article>
-
-      <!-- Step 05 -->
-      <article id="step-05" class="card" data-title="05: Learn OSINT Resources" data-tags="learning,resources">
-        <div class="step-num">05</div>
-        <h2 class="card-title">Core OSINT Resources & Learning</h2>
-        <div class="card-meta"><span class="chip">Learning</span> <span class="muted">OSINT Framework, Bellingcat, YouTube</span></div>
-        <div class="card-body">
-          <p>Keep a shortlist of canonical resources and practice challenges.</p>
-          <ul>
-            <li>OSINT Framework, Bellingcat OSINT Guide, SANS OSINT materials.</li>
-            <li>YouTube channels: I-Intelligence, Hacksploit Bangla (for Bengali content).</li>
-            <li>Practice: Trace Labs CTFs, Hacktoria, OSINT Dojo.</li>
-          </ul>
-        </div>
-      </article>
-
-      <!-- Step 06 -->
-      <article id="step-06" class="card" data-title="06: Metadata Extraction & Manipulation" data-tags="metadata,exiftool">
-        <div class="step-num">06</div>
-        <h2 class="card-title">Metadata Extraction & Manipulation</h2>
-        <div class="card-meta"><span class="chip">Forensics</span> <span class="muted">Tools: ExifTool, strings, binwalk, FOCA</span></div>
-        <div class="card-body">
-          <p>Extract timestamps, GPS, software markers, and hidden strings from files.</p>
-          <ul>
-            <li>ExifTool for images & docs. Example: <code>exiftool image.jpg</code></li>
-            <li>strings / binwalk for binaries and firmware.</li>
-            <li>FOCA for document metadata collected via Google Dorks.</li>
-          </ul>
-        </div>
-      </article>
-
-      <!-- Step 07 -->
-      <article id="step-07" class="card" data-title="07: Passive Infrastructure Recon" data-tags="infrastructure,shodan,dns">
-        <div class="step-num">07</div>
-        <h2 class="card-title">Passive Infrastructure Recon</h2>
-        <div class="card-meta"><span class="chip">Infra</span> <span class="muted">Shodan, Censys, DNS mapping</span></div>
-        <div class="card-body">
-          <p>Map domains, IPs, tech stacks and exposed devices without active probing.</p>
-          <ul>
-            <li>Shodan / Censys for exposed devices and banners.</li>
-            <li>DNSDumpster, SecurityTrails, ViewDNS for passive DNS and history.</li>
-            <li>BuiltWith / Wappalyzer for tech stack fingerprinting; ASN lookups for related hosting ranges.</li>
-          </ul>
-        </div>
-      </article>
-
-      <!-- Step 08 -->
-      <article id="step-08" class="card" data-title="08: OPSEC & Sock Puppets" data-tags="opsec,sockpuppet,vpn">
-        <div class="step-num">08</div>
-        <h2 class="card-title">Sock Puppets & Operational Security (OPSEC)</h2>
-        <div class="card-meta"><span class="chip">OPSEC</span> <span class="muted">VMs, Tor, VPN, compartmentalization</span></div>
-        <div class="card-body">
-          <p>Protect your identity when investigating. Separate personas and artifacts.</p>
-          <ul>
-            <li>Use VMs (Tails, Qubes), chain VPN → Tor for anonymity when needed.</li>
-            <li>Create believable sock puppets with legitimate backstories if interacting.</li>
-            <li>Strip EXIF and cookies before uploading images; never search targets on personal devices.</li>
-          </ul>
-        </div>
-      </article>
-
-      <!-- Step 09 -->
-      <article id="step-09" class="card" data-title="09: Advanced Geolocation" data-tags="geolocation,suncalc,mapillary">
-        <div class="step-num">09</div>
-        <h2 class="card-title">Advanced Image & Video Geolocation</h2>
-        <div class="card-meta"><span class="chip">Geo</span> <span class="muted">SunCalc, Mapillary, topography</span></div>
-        <div class="card-body">
-          <p>Use shadows, architecture, weather and terrain to verify location and time.</p>
-          <ul>
-            <li>SunCalc.net to confirm sun angle vs timestamp.</li>
-            <li>Mapillary / Yandex / Street View to visually match scenes and road signs.</li>
-            <li>Topographic maps & flight path data for disaster/strike verification.</li>
-          </ul>
-        </div>
-      </article>
-
-      <!-- Step 10 -->
-      <article id="step-10" class="card" data-title="10: Social Network Mapping" data-tags="maltego,socialmapping">
-        <div class="step-num">10</div>
-        <h2 class="card-title">Social Network Mapping</h2>
-        <div class="card-meta"><span class="chip">Mapping</span> <span class="muted">Maltego, SpiderFoot, Recon-ng</span></div>
-        <div class="card-body">
-          <p>Build relationship graphs of people, domains, and organizations.</p>
-          <ul>
-            <li>Maltego for graph-based relationships; use SocialLinks, IntelX transforms as available.</li>
-            <li>SpiderFoot / Recon-ng for automated scraping and enrichment.</li>
-            <li>Use Sherlock / WhatsMyName to enumerate aliases across platforms.</li>
-          </ul>
-        </div>
-      </article>
-
-      <!-- Step 11 -->
-      <article id="step-11" class="card" data-title="11: Corporate & Financial Recon" data-tags="corporate,opencorporates,aleph">
-        <div class="step-num">11</div>
-        <h2 class="card-title">Investigate Corporate & Financial Info</h2>
-        <div class="card-meta"><span class="chip">Corporate</span> <span class="muted">OpenCorporates, Aleph, LittleSis</span></div>
-        <div class="card-body">
-          <p>Trace ownership, directors, subsidiaries and offshore structures.</p>
-          <ul>
-            <li>OpenCorporates for registrations; Companies House for UK filings.</li>
-            <li>Aleph (OCCRP) for leaked docs, sanctions, and corruption cases.</li>
-            <li>LittleSis to map political and corporate connections.</li>
-          </ul>
-        </div>
-      </article>
-
-      <!-- Step 12 -->
-      <article id="step-12" class="card" data-title="12: Email, Breach & Credential OSINT" data-tags="breach,email,credentials">
-        <div class="step-num">12</div>
-        <h2 class="card-title">Email, Breach & Credential OSINT</h2>
-        <div class="card-meta"><span class="chip">Breach</span> <span class="muted">HaveIBeenPwned, Dehashed, EmailRep</span></div>
-        <div class="card-body">
-          <p>Check exposure, leaked dumps, and reputation of email addresses.</p>
-          <ul>
-            <li>HaveIBeenPwned / Dehashed / Scylla / LeakCheck to locate leaks and dumps.</li>
-            <li>EmailRep.io and IntelX for reputation and historical presence.</li>
-            <li>Document findings, but do not attempt to access accounts or use leaked credentials.</li>
-          </ul>
-        </div>
-      </article>
-
-      <!-- Step 13 -->
-      <article id="step-13" class="card" data-title="13: Dark Web & Forum OSINT" data-tags="darkweb,forums,tor">
-        <div class="step-num">13</div>
-        <h2 class="card-title">Dark Web & Forum OSINT (Cautious)</h2>
-        <div class="card-meta"><span class="chip">Darkweb</span> <span class="muted">Tor, IntelX, Hunchly</span></div>
-        <div class="card-body">
-          <p>Search darknet resources for leaks and actor activity — with strict OPSEC.</p>
-          <ul>
-            <li>Use Tor Browser and dark-web indexes (Ahmia, DarkSearch.io) safely.</li>
-            <li>Monitor relevant forums (avoid downloading illegal content).</li>
-            <li>Use Hunchly for archiving and maintaining an evidence chain.</li>
-          </ul>
-        </div>
-      </article>
-
-      <!-- Step 14 -->
-      <article id="step-14" class="card" data-title="14: Blockchain OSINT" data-tags="blockchain,etherscan,chainalysis">
-        <div class="step-num">14</div>
-        <h2 class="card-title">Blockchain OSINT</h2>
-        <div class="card-meta"><span class="chip">Blockchain</span> <span class="muted">Etherscan, Chainalysis, TRM</span></div>
-        <div class="card-body">
-          <p>Trace transactions, cluster wallets, and identify laundering behavior.</p>
-          <ul>
-            <li>Use Etherscan, Blockchain.com, BitQuery for public chain analysis.</li>
-            <li>For advanced attribution use Chainalysis / TRM Labs (paid).</li>
-            <li>Look for mixers, clustering patterns, and reuse of addresses across services.</li>
-          </ul>
-        </div>
-      </article>
-
-      <!-- Step 15 -->
-      <article id="step-15" class="card" data-title="15: Build Your OSINT Stack" data-tags="automation,python,stack">
-        <div class="step-num">15</div>
-        <h2 class="card-title">Build Your Own OSINT Stack (Automation)</h2>
-        <div class="card-meta"><span class="chip">Automation</span> <span class="muted">Python, SpiderFoot, Recon-ng</span></div>
-        <div class="card-body">
-          <p>Automate repetitive tasks and stitch tool outputs together.</p>
-          <ul>
-            <li>Learn Python for API integrations and custom scrapers.</li>
-            <li>Use SpiderFoot and Recon-ng to orchestrate multi-source scans.</li>
-            <li>Export results to CSV/JSON for downstream analysis (Neo4j, Kibana).</li>
-          </ul>
-        </div>
-      </article>
-
-      <!-- Step 16 -->
-      <article id="step-16" class="card" data-title="16: Maltego Best Practices" data-tags="maltego,graph,transforms">
-        <div class="step-num">16</div>
-        <h2 class="card-title">Maltego — Transform-Based Graph Analysis</h2>
-        <div class="card-meta"><span class="chip">Graph</span> <span class="muted">Transforms, clustering, OPSEC</span></div>
-        <div class="card-body">
-          <p>Use the right entity, add transforms carefully, and manage graph size.</p>
-          <ul>
-            <li>Start from a relevant entity: person, email, domain, phone, company.</li>
-            <li>Use built-in transforms and add SocialLinks/IntelX/VirusTotal where needed.</li>
-            <li>Use entity coloring, collections, and explore mode for focus; export annotated graphs for reporting.</li>
-            <li>OPSEC: do not run transforms from personal identity/IP — use proxies and API keys safely.</li>
-          </ul>
-        </div>
-      </article>
-
-      <!-- Step 17 -->
-      <article id="step-17" class="card" data-title="17: SpiderFoot & Recon-ng" data-tags="spiderfoot,recon-ng">
-        <div class="step-num">17</div>
-        <h2 class="card-title">SpiderFoot & Recon-ng</h2>
-        <div class="card-meta"><span class="chip">Automation</span> <span class="muted">CLI & GUI workflows</span></div>
-        <div class="card-body">
-          <p>Automate broad reconnaissance and chain modules for deeper sweeps.</p>
-          <ul>
-            <li>SpiderFoot for wide scans across 100+ data sources (use CLI for automation).</li>
-            <li>Recon-ng for modular, scriptable recon with API key support; export CSVs for analysis.</li>
-            <li>Run modules selectively to avoid noise (and rate limits).</li>
-          </ul>
-        </div>
-      </article>
-
-      <!-- Step 18 -->
-      <article id="step-18" class="card" data-title="18: SocialLinks & IntelX" data-tags="sociallinks,intelx">
-        <div class="step-num">18</div>
-        <h2 class="card-title">SocialLinks, IntelX & Specialized Tools</h2>
-        <div class="card-meta"><span class="chip">Deep search</span> <span class="muted">social media, leaks, historic snapshots</span></div>
-        <div class="card-body">
-          <p>Use SocialLinks for deep social media & dark-web content; IntelX for leak archival.</p>
-          <ul>
-            <li>SocialLinks CE / Pro for aggregating forum/profile data, face search (Pro).</li>
-            <li>IntelX selectors (e.g., <code>selectors:email_address name@example.com</code>) to search leaks and paste clones.</li>
-            <li>Combine outputs with HaveIBeenPwned / Dehashed for comprehensive breach mapping.</li>
-          </ul>
-        </div>
-      </article>
-
-      <!-- Step 19 -->
-      <article id="step-19" class="card" data-title="19: EXIFTool + SunCalc + Mapillary" data-tags="exiftool,suncalc,mapillary">
-        <div class="step-num">19</div>
-        <h2 class="card-title">EXIFTool + SunCalc + Mapillary Combo</h2>
-        <div class="card-meta"><span class="chip">Verification</span> <span class="muted">metadata → visual matching</span></div>
-        <div class="card-body">
-          <p>Combine metadata extraction with solar geometry and street imagery for high-confidence geolocation.</p>
-          <ul>
-            <li>Extract EXIF with <code>exiftool image.jpg</code>; load GPS into mapping tools.</li>
-            <li>Use SunCalc to verify lighting/shadow consistency with claimed timestamps.</li>
-            <li>Use Mapillary / Yandex to visually match structures and signage.</li>
-          </ul>
-        </div>
-      </article>
-
-      <!-- Step 20 -->
-      <article id="step-20" class="card" data-title="20: Shodan/Censys/FOFA & Leak Tools" data-tags="shodan,censys,breach-tools">
-        <div class="step-num">20</div>
-        <h2 class="card-title">Shodan, Censys, FOFA & Breach Tools</h2>
-        <div class="card-meta"><span class="chip">Recon</span> <span class="muted">exposed devices, breach search</span></div>
-        <div class="card-body">
-          <p>Use internet-wide search engines and breach repositories to complete the picture.</p>
-          <ul>
-            <li>Shodan / Censys queries for exposed services; FOFA for obscure filters.</li>
-            <li>HaveIBeenPwned, Dehashed, Scylla / LeakCheck for breaches and dumps.</li>
-            <li>Keep logs and always archive with Hunchly / screenshots for evidence chain.</li>
-          </ul>
-        </div>
-      </article>
-
-      <!-- Step 21 -->
-      <article id="step-21" class="card" data-title="21: Hunchly & Evidence Archiving" data-tags="hunchly,evidence,archiving">
-        <div class="step-num">21</div>
-        <h2 class="card-title">Hunchly — Archiving Your Investigation</h2>
-        <div class="card-meta"><span class="chip">Evidence</span> <span class="muted">screenshots, timestamps, URLs</span></div>
-        <div class="card-body">
-          <p>Archive every step (screenshots, metadata) to retain an auditable chain of evidence.</p>
-          <ul>
-            <li>Hunchly auto-captures pages, timestamps, and can highlight relevant keywords.</li>
-            <li>Useful for legal reporting and team handoff.</li>
-          </ul>
-        </div>
-      </article>
-
-      <!-- Step 22 -->
-      <article id="step-22" class="card" data-title="22: Personal Knowledge & Graph Tools" data-tags="obsidian,graph,neo4j">
-        <div class="step-num">22</div>
-        <h2 class="card-title">Obsidian, Graph Notebooks & Offline Graphs</h2>
-        <div class="card-meta"><span class="chip">Triage</span> <span class="muted">Obsidian, Neo4j, GraphXR</span></div>
-        <div class="card-body">
-          <p>Store notes, build local graphs, and index findings for revisit and reporting.</p>
-          <ul>
-            <li>Obsidian for markdown-based note-taking and Dataview indexing.</li>
-            <li>Use Neo4j or GraphXR if you need offline graph analytics similar to Maltego.</li>
-            <li>Keep exports of datasets, screenshots and annotated timelines in secure storage.</li>
-          </ul>
-        </div>
-      </article>
-
-      <!-- Step 23: Final best-practices -->
-      <article id="step-23" class="card" data-title="23: OPSEC Golden Rules & Reporting" data-tags="opsec,reporting">
-        <div class="step-num">23</div>
-        <h2 class="card-title">Final: OPSEC Golden Rules & Reporting</h2>
-        <div class="card-meta"><span class="chip">Policy</span> <span class="muted">legal & ethical boundaries</span></div>
-        <div class="card-body">
-          <p>Before concluding: ensure ethical handling and prepare reports.</p>
-          <ul>
-            <li>Never search real targets on personal devices; separate identity and tools.</li>
-            <li>Use burner emails/phones for operational profiles if interaction is necessary.</li>
-            <li>Archive everything, annotate evidence, and prepare clear reports (PDF/GraphML) for stakeholders.</li>
-            <li>Do not access or use leaked credentials — document but do not exploit.</li>
-          </ul>
-        </div>
-      </article>
-
-    </section>
-
-    <footer>
-      <div>Compiled: <time datetime="2025-09-26">2025-09-26</time>. Source material extracted from the OSINT guideline PDF. :contentReference[oaicite:2]{index=2}</div>
-      <div style="margin-top:6px;" class="muted">Template sanitized: no PII or leaked credentials included. Use responsibly and follow legal/ethical rules in your jurisdiction.</div>
-    </footer>
-  </main>
-</div>
-
-<script>
-  // Populate TOC from cards
-  (function(){
-    const toc = document.getElementById('toc');
-    const grid = document.getElementById('grid');
-    const cards = Array.from(grid.querySelectorAll('.card'));
-    cards.forEach(c=>{
-      const title = (c.dataset.title || c.querySelector('.card-title')?.innerText || 'Step');
-      const id = c.id;
-      const li = document.createElement('li');
-      li.innerHTML = '<a href="#'+id+'">'+title+'</a>';
-      toc.appendChild(li);
-    });
-
-    // Search / count
-    const q = document.getElementById('q');
-    const countEl = document.getElementById('count');
-    const allCards = cards;
-    function updateCount(){
-      const visible = allCards.filter(c => c.style.display !== 'none').length;
-      countEl.textContent = visible + ' / ' + allCards.length;
-    }
-    function matchCard(card, term){
-      if(!term) return true;
-      term = term.toLowerCase();
-      const title = (card.dataset.title || card.querySelector('.card-title').innerText).toLowerCase();
-      const tags = (card.dataset.tags || '').toLowerCase();
-      const text = card.innerText.toLowerCase();
-      return title.includes(term) || tags.includes(term) || text.includes(term);
-    }
-    q.addEventListener('input', ()=> {
-      const term = q.value.trim();
-      allCards.forEach(c => c.style.display = matchCard(c, term) ? '' : 'none');
-      updateCount();
-    });
-    document.getElementById('clearBtn').addEventListener('click', ()=>{ q.value=''; q.dispatchEvent(new Event('input')); q.focus(); });
-    updateCount();
-  })();
-</script>
+                term = term.toLowerCase();
+                const title = (card.dataset.title || card.querySelector('.card-title').innerText).toLowerCase();
+                const tags = (card.dataset.tags || '').toLowerCase();
+                const text = card.innerText.toLowerCase();
+                return title.includes(term) || tags.includes(term) || text.includes(term);
+            }
+            q.addEventListener('input', () => {
+                const term = q.value.trim();
+                allCards.forEach(c => c.style.display = matchCard(c, term) ? '' : 'none');
+                updateCount();
+            });
+            document.getElementById('clearBtn').addEventListener('click', () => {
+                q.value = '';
+                q.dispatchEvent(new Event('input'));
+                q.focus();
+            });
+            updateCount();
+        })();
+    </script>
 </body>
+
 </html>
